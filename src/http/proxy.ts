@@ -20,22 +20,22 @@ export interface ProxyConfig {
  * @param {url} url 请求的url
  * @param {options} Options proxy的参数
  */
-export default function proxy(url: string, proxy: ProxyConfig) {
+export default function proxy(route: string, proxy: ProxyConfig) {
 
-  const matchKey = Object.keys(proxy).find(i => url.match(`^${i}`));
+  const matchKey = Object.keys(proxy).find(i => route.match(`^${i}`));
 
   if (matchKey === undefined ){
-    throw new Error(`Not match url: ${url}, proxy: ${proxy}`) 
+    throw new Error(`Not match route: ${route}, proxy: ${proxy}`) 
   }
 
   const { target, pathRewrite } = proxy[matchKey];
-  const realURL = typeof target === 'function' ? target() : target;
+  const host = typeof target === 'function' ? target() : target;
 
   if (pathRewrite !== undefined ){
     const [source, replace] = pathRewrite;
-    const proxyUrl = url.replace(source, replace);
-    return realURL + proxyUrl
+    const proxyUrl = route.replace(RegExp(source), replace);
+    return host + proxyUrl
   }
   
-  return realURL + url;
+  return host + route;
 };
