@@ -26,7 +26,7 @@ export default () => {
     {
       onSuccess(res: { data: string; ok: boolean }) {
         localStorage.setItem('token', res.data);
-        history.push('/profile');
+        history.replace('/profile');
       },
     },
   );
