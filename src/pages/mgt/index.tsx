@@ -1,37 +1,37 @@
-import React, { useState } from 'react';
-import { useLocation } from 'react-router';
+import React from 'react';
+import { useHistory } from 'react-router';
 import { useQuery } from 'react-query';
 
-import {
-  Button,
-  Card,
-  Form,
-  Input,
-  Space,
-  Table,
-  Tag,
-  Divider,
-  Popconfirm,
-} from 'antd';
+import { Card, Form, Input, Space, Table, Tag } from 'antd';
 import moment from 'moment';
 
 import * as http from '@/http';
 import SearchForm from '@/components/SearchForm';
 import UserOperator, { User } from './components/UserOperator';
+import UserAddBtn from './components/UserAddBtn';
 
 export default () => {
-  const [page, setPage] = useState(1);
-  const _location = useLocation();
+  const history = useHistory();
+  const _location = history.location;
 
   const { isLoading, data: res } = useQuery(
-    ['user-list', page, _location?.search],
+    ['user-list', _location?.search],
     () => {
-      const params: { [key: string]: string | Number } = Object.fromEntries(
+      const {
+        page,
+        ...params
+      }: { [key: string]: string | Number } = Object.fromEntries(
         new URLSearchParams(_location?.search),
       );
-      params.page = page;
+
+      const limit = +params?.limit || 10;
+      const skip = (+page - 1) * limit || 0;
+
       return http.RESTful.get('/main/user/list', {
-        params,
+        params: {
+          skip,
+          ...params,
+        },
         silence: 'success',
       });
     },
@@ -43,6 +43,16 @@ export default () => {
 
   function isAdmin(role: boolean) {
     return role ? <Tag color="green">管理员</Tag> : <Tag>用户</Tag>;
+  }
+
+  function pageChangeHandler(page: number, limit: number) {
+    const params = new URLSearchParams(_location?.search);
+    params.set('page', `${page}`);
+    params.set('limit', `${limit}`);
+    history.push({
+      pathname: _location.pathname,
+      search: params.toString(),
+    });
   }
 
   const columns = [
@@ -76,22 +86,33 @@ export default () => {
     },
   ];
 
-  console.log(res);
-
   return (
-    <Card style={{ width: '100%', height: '100%', margin: '24px' }}>
+    <Card
+      style={{
+        width: '100%',
+        height: '100%',
+        margin: '24px',
+        minHeight: '800px',
+      }}
+    >
       <Space direction="vertical" style={{ width: '100%' }}>
         <SearchForm isLoading={isLoading}>
           <Form.Item name="keyword">
             <Input placeholder="输入关键字以查询" allowClear></Input>
           </Form.Item>
         </SearchForm>
-        <Button type="primary">新建用户</Button>
+
+        <UserAddBtn />
+
         <Table
           loading={isLoading}
           rowKey="id"
           columns={columns}
           dataSource={res?.data}
+          pagination={{
+            total: res?.total,
+            onChange: pageChangeHandler,
+          }}
         />
       </Space>
     </Card>

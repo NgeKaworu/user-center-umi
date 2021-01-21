@@ -1,10 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useMutation, useQueryClient } from 'react-query';
+
 import { Space, Divider, Popconfirm, Modal, Form, Switch } from 'antd';
-import { useState } from 'react';
+
 import SubmitForm from '@/components/SubmitForm';
 import EmailInput from '@/components/EmailInput';
 import NameInput from '@/components/NameInput';
 import PwdInput from '@/components/PwdInput';
+
+import * as http from '@/http';
 
 export interface User {
   id: string;
@@ -26,20 +30,54 @@ export default (props: UserOperatorProps) => {
   useEffect(() => {
     form.setFieldsValue(user);
   }, [user]);
+  const queryClient = useQueryClient();
+
+  const updater = useMutation(
+    (values: { [key: string]: any }) => {
+      return http.RESTful.put('/main/user/update', {
+        data: {
+          uid: user.id,
+          ...values,
+        },
+      });
+    },
+    {
+      onSuccess() {
+        queryClient.invalidateQueries('user-list');
+        visibleHandler();
+      },
+    },
+  );
+
+  const deleter = useMutation(
+    () => http.RESTful.delete(`/main/user/remove/${user.id}`),
+    {
+      onSuccess() {
+        queryClient.invalidateQueries('user-list');
+      },
+    },
+  );
 
   function visibleHandler() {
     setVsible((s) => !s);
   }
 
   function submitHandler() {
-    form.validateFields().then((values) => console.log(values));
+    form.validateFields().then(updater.mutate);
+  }
+
+  function removeHandler() {
+    deleter.mutate();
   }
 
   return (
     <Space>
       <a onClick={visibleHandler}>修改</a>
       <Divider type="vertical"></Divider>
-      <Popconfirm title="删除后无法恢复！请确认删除。">
+      <Popconfirm
+        title="删除后无法恢复！请确认删除。"
+        onConfirm={removeHandler}
+      >
         <a style={{ color: 'red' }}>删除</a>
       </Popconfirm>
       <Modal
