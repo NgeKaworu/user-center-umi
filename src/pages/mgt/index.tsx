@@ -45,7 +45,7 @@ export default () => {
     return role ? <Tag color="green">管理员</Tag> : <Tag>用户</Tag>;
   }
 
-  function pageChangeHandler(page: number, limit: number) {
+  function pageChangeHandler(page: number, limit?: number) {
     const params = new URLSearchParams(_location?.search);
     params.set('page', `${page}`);
     params.set('limit', `${limit}`);
