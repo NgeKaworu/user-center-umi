@@ -6,10 +6,10 @@ import { Button, Form } from 'antd';
 
 import * as http from '@/http';
 
-import EmailInput from './components/EmailInput';
-import PwdInput from './components/PwdInput';
-import NameInput from './components/NameInput';
-import MediaCard from './components/MediaCard';
+import EmailInput from '@/components/EmailInput';
+import PwdInput from '@/components/PwdInput';
+import NameInput from '@/components/NameInput';
+import MediaCard from '@/components/MediaCard';
 
 export default () => {
   const [flag, setFlag] = useState('登录');

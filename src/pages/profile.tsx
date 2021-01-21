@@ -6,7 +6,7 @@ import { Button, Space } from 'antd';
 
 import * as http from '@/http';
 
-import MediaCard from './components/MediaCard';
+import MediaCard from '../components/MediaCard';
 
 export default () => {
   const history = useHistory();

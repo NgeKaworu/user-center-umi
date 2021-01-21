@@ -13,7 +13,7 @@ const queyClient = new QueryClient();
 export default (props: PropsWithChildren<any>) => {
   return <QueryClientProvider client={queyClient}>
     <ConfigProvider locale={zhCN}>
-      <Layout style={{ height: "100%" }}>
+      <Layout style={{ minHeight: "100%" }}>
         <Content
           style={{
             display: "flex",

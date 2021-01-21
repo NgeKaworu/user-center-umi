@@ -16,7 +16,7 @@ import {
 import moment from 'moment';
 
 import * as http from '@/http';
-import SearchForm from './components/SearchForm';
+import SearchForm from '@/components/SearchForm';
 import UserOperator, { User } from './components/UserOperator';
 
 export default () => {
