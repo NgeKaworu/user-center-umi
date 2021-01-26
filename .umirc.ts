@@ -1,6 +1,13 @@
 import { defineConfig } from 'umi';
 
 export default defineConfig({
+  base: '/user-center',
+  publicPath: '/user-center/',
+  outputPath: './dist/user-center',
+  mountElementId: 'user-center',
+  qiankun: {
+    slave: {},
+  },
   fastRefresh: {},
   nodeModulesTransform: {
     type: 'none',

@@ -1,4 +1,5 @@
 {
+  "name": "user-center",
   "private": true,
   "scripts": {
     "start": "umi dev",
@@ -31,6 +32,7 @@
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
     "@types/styled-components": "^5.1.7",
+    "@umijs/plugin-qiankun": "^2.21.2",
     "@umijs/test": "^3.3.5",
     "lint-staged": "^10.0.7",
     "prettier": "^2.2.0",
