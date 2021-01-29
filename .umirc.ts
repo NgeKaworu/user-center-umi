@@ -1,10 +1,6 @@
 import { defineConfig } from 'umi';
 
 export default defineConfig({
-  base: '/user-center',
-  publicPath: '/user-center/',
-  outputPath: './dist/user-center',
-  mountElementId: 'user-center',
   qiankun: {
     slave: {},
   },
@@ -21,7 +17,7 @@ export default defineConfig({
         { path: '/profile/', component: 'profile' },
         { path: '/login/', component: 'login' },
         { path: '/mgt/', component: 'mgt' },
-        { redirect: '/profile/' },
+        // { redirect: '/profile/' },
       ],
     },
   ],
