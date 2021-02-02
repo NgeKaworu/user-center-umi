@@ -1,6 +1,7 @@
 import { defineConfig } from 'umi';
 
 export default defineConfig({
+  title: '用户中心',
   qiankun: {
     slave: {},
   },
