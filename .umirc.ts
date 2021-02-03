@@ -22,4 +22,13 @@ export default defineConfig({
       ],
     },
   ],
+
+  hash: true,
+  base: '/user-center',
+  publicPath: '/user-center/',
+  runtimePublicPath: true,
+  externals: {
+    moment: 'moment',
+  },
+  scripts: ['https://lib.baomitu.com/moment.js/latest/moment.min.js'],
 });

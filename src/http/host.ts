@@ -1,7 +1,7 @@
 export const mainHost = () => {
   switch (process.env.NODE_ENV) {
     case 'production':
-      return 'https://api.furan.xyz/time-mgt';
+      return 'https://api.furan.xyz/user-center';
     default:
       return 'http://localhost:8011';
   }
