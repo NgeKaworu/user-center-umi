@@ -31,4 +31,12 @@ export default defineConfig({
     moment: 'moment',
   },
   scripts: ['https://lib.baomitu.com/moment.js/latest/moment.min.js'],
+  extraBabelPlugins: [
+    [
+      'babel-plugin-styled-components',
+      {
+        namespace: 'user-center',
+      },
+    ],
+  ],
 });
