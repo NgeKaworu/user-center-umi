@@ -22,7 +22,7 @@ export default defineConfig({
       ],
     },
   ],
-
+  dva: false,
   hash: true,
   base: '/user-center',
   publicPath: '/user-center/',
