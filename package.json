@@ -21,25 +21,25 @@
     ]
   },
   "dependencies": {
-    "@ant-design/pro-layout": "^6.5.0",
+    "@ant-design/pro-layout": "^6.27.1",
     "@umijs/preset-react": "1.x",
-    "axios": "^0.21.1",
-    "react-query": "^3.5.16",
-    "styled-components": "^5.2.1",
-    "umi": "^3.3.5"
+    "axios": "^0.24.0",
+    "react-query": "^3.30.0",
+    "styled-components": "^5.3.3",
+    "umi": "^3.5.20"
   },
   "devDependencies": {
-    "@types/react": "^16.9.0",
-    "@types/react-dom": "^16.9.0",
-    "@types/styled-components": "^5.1.7",
-    "@umijs/plugin-qiankun": "^2.21.2",
-    "@umijs/test": "^3.3.5",
-    "babel-plugin-styled-components": "^1.12.0",
-    "lint-staged": "^10.0.7",
-    "prettier": "^2.2.0",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "typescript": "^4.1.2",
+    "@types/react": "^17.0.33",
+    "@types/react-dom": "^17.0.10",
+    "@types/styled-components": "^5.1.15",
+    "@umijs/plugin-qiankun": "^2.35.0",
+    "@umijs/test": "^3.5.20",
+    "babel-plugin-styled-components": "^1.13.3",
+    "lint-staged": "^11.2.6",
+    "prettier": "^2.4.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "typescript": "^4.4.4",
     "yorkie": "^2.0.0"
   }
 }
