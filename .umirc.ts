@@ -30,6 +30,17 @@ export default defineConfig({
   externals: {
     moment: 'moment',
   },
+  devServer: {
+    proxy: {
+      '/user-center-go': {
+        target: 'http://user-center-go:8011',
+        changeOrigin: true,
+        pathRewrite: {
+          '/user-center-go': '',
+        },
+      },
+    },
+  },
   scripts: ['https://lib.baomitu.com/moment.js/latest/moment.min.js'],
   extraBabelPlugins: [
     [

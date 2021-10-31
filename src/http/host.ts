@@ -3,6 +3,6 @@ export const mainHost = () => {
     case 'production':
       return 'https://api.furan.xyz/user-center';
     default:
-      return 'http://localhost:8011';
+      return '/user-center-go';
   }
 };
