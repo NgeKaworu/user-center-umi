@@ -18,8 +18,8 @@ export default () => {
   const finshHandler = useMutation<any>(
     (values) => {
       const urls: { [key: string]: string } = {
-        登录: '/main/login',
-        注册: '/main/register',
+        登录: '/login',
+        注册: '/register',
       };
       return restful.post(urls[flag], { data: values });
     },

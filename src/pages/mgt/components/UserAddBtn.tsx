@@ -16,7 +16,7 @@ export default () => {
   const queryClient = useQueryClient();
 
   const updater = useMutation(
-    (data) => restful.post('/main/user/create', { data }),
+    (data) => restful.post('/user/create', { data }),
     {
       onSuccess() {
         queryClient.invalidateQueries('user-list');

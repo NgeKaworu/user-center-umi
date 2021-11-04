@@ -34,7 +34,7 @@ export default (props: UserOperatorProps) => {
 
   const updater = useMutation(
     (values: { [key: string]: any }) => {
-      return restful.put('/main/user/update', {
+      return restful.put('/user/update', {
         data: {
           uid: user.id,
           ...values,
@@ -49,14 +49,11 @@ export default (props: UserOperatorProps) => {
     },
   );
 
-  const deleter = useMutation(
-    () => restful.delete(`/main/user/remove/${user.id}`),
-    {
-      onSuccess() {
-        queryClient.invalidateQueries('user-list');
-      },
+  const deleter = useMutation(() => restful.delete(`/user/remove/${user.id}`), {
+    onSuccess() {
+      queryClient.invalidateQueries('user-list');
     },
-  );
+  });
 
   function visibleHandler() {
     setVsible((s) => !s);

@@ -23,7 +23,7 @@ export default () => {
       const limit = +params?.limit || 10;
       const skip = (+page - 1) * limit || 0;
 
-      return restful.get('/main/user/list', {
+      return restful.get('/user/list', {
         params: {
           skip,
           ...params,
