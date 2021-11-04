@@ -12,7 +12,7 @@ export default () => {
   const history = useHistory();
 
   const { isLoading, data: res } = useQuery('profile', () =>
-    restful.get('/main/profile', { notify: 'fail' } as CustomRequestConfig),
+    restful.get('/main/profile', { notify: 'fail' }),
   );
 
   function logoutHandler() {

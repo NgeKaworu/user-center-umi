@@ -6,7 +6,7 @@ import type { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 
 export type Notify = boolean | 'success' | 'fail';
 
-export interface CustomRequestConfig extends AxiosRequestConfig {
+export interface CustomRequestConfig<D = any> extends AxiosRequestConfig<D> {
   // 是否捕获错误
   throwError?: boolean;
   // 是否通知
@@ -22,6 +22,41 @@ export interface CustomResponse extends AxiosResponse {
 export interface CustomInstance extends AxiosInstance {
   (config: CustomRequestConfig): AxiosPromise;
   (url: string, config?: CustomRequestConfig): AxiosPromise;
+  getUri(config?: CustomRequestConfig): string;
+  request<T = any, R = AxiosResponse<T>, D = any>(
+    config: CustomRequestConfig<D>,
+  ): Promise<R>;
+  get<T = any, R = AxiosResponse<T>, D = any>(
+    url: string,
+    config?: CustomRequestConfig<D>,
+  ): Promise<R>;
+  delete<T = any, R = AxiosResponse<T>, D = any>(
+    url: string,
+    config?: CustomRequestConfig<D>,
+  ): Promise<R>;
+  head<T = any, R = AxiosResponse<T>, D = any>(
+    url: string,
+    config?: CustomRequestConfig<D>,
+  ): Promise<R>;
+  options<T = any, R = AxiosResponse<T>, D = any>(
+    url: string,
+    config?: CustomRequestConfig<D>,
+  ): Promise<R>;
+  post<T = any, R = AxiosResponse<T>, D = any>(
+    url: string,
+    data?: D,
+    config?: CustomRequestConfig<D>,
+  ): Promise<R>;
+  put<T = any, R = AxiosResponse<T>, D = any>(
+    url: string,
+    data?: D,
+    config?: CustomRequestConfig<D>,
+  ): Promise<R>;
+  patch<T = any, R = AxiosResponse<T>, D = any>(
+    url: string,
+    data?: D,
+    config?: CustomRequestConfig<D>,
+  ): Promise<R>;
 }
 
 export interface CustomError extends AxiosError {
@@ -133,7 +168,7 @@ function reAuthorization(config: CustomRequestConfig) {
       reAuth: false,
       notify: 'fail',
       params: { token: localStorage.getStorage('refresh_token') },
-    } as CustomRequestConfig)
+    })
     .then((resp: CustomResponse) => {
       localStorage.setItem('token', resp.data.token);
       localStorage.setItem('refresh_token', resp.data.refresh_token);

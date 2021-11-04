@@ -29,7 +29,7 @@ export default () => {
           ...params,
         },
         notify: 'fail',
-      } as CustomRequestConfig);
+      });
     },
   );
 
