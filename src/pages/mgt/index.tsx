@@ -5,7 +5,7 @@ import { useQuery } from 'react-query';
 import { Card, Form, Input, Space, Table, Tag } from 'antd';
 import moment from 'moment';
 
-import * as http from '@/http';
+import { CustomRequestConfig, restful } from '@/http';
 import SearchForm from '@/components/SearchForm';
 import UserOperator, { User } from './components/UserOperator';
 import UserAddBtn from './components/UserAddBtn';
@@ -17,23 +17,19 @@ export default () => {
   const { isLoading, data: res } = useQuery(
     ['user-list', _location?.search],
     () => {
-      const {
-        page,
-        ...params
-      }: { [key: string]: string | Number } = Object.fromEntries(
-        new URLSearchParams(_location?.search),
-      );
+      const { page, ...params }: { [key: string]: string | Number } =
+        Object.fromEntries(new URLSearchParams(_location?.search));
 
       const limit = +params?.limit || 10;
       const skip = (+page - 1) * limit || 0;
 
-      return http.RESTful.get('/main/user/list', {
+      return restful.get('/main/user/list', {
         params: {
           skip,
           ...params,
         },
-        silence: 'success',
-      });
+        notify: 'fail',
+      } as CustomRequestConfig);
     },
   );
 

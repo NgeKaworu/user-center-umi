@@ -4,7 +4,7 @@ import { useQuery } from 'react-query';
 
 import { Button, Space } from 'antd';
 
-import * as http from '@/http';
+import { CustomRequestConfig, restful } from '@/http';
 
 import MediaCard from '../components/MediaCard';
 
@@ -12,7 +12,7 @@ export default () => {
   const history = useHistory();
 
   const { isLoading, data: res } = useQuery('profile', () =>
-    http.RESTful.get('/main/profile', { silence: 'success' }),
+    restful.get('/main/profile', { notify: 'fail' } as CustomRequestConfig),
   );
 
   function logoutHandler() {

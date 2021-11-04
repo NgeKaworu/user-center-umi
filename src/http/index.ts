@@ -2,12 +2,7 @@ import { message } from 'antd';
 
 import axios, { AxiosInstance, AxiosPromise } from 'axios';
 
-import type {
-  AxiosRequestConfig,
-  AxiosResponse,
-  Method,
-  AxiosError,
-} from 'axios';
+import type { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 
 export type Notify = boolean | 'success' | 'fail';
 
@@ -136,7 +131,7 @@ function reAuthorization(config: CustomRequestConfig) {
   return restful
     .get('/uc/oauth2/refresh', {
       reAuth: false,
-      silence: 'success',
+      notify: 'fail',
       params: { token: localStorage.getStorage('refresh_token') },
     } as CustomRequestConfig)
     .then((resp: CustomResponse) => {

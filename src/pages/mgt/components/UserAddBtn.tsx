@@ -8,7 +8,7 @@ import EmailInput from '@/components/EmailInput';
 import NameInput from '@/components/NameInput';
 import PwdInput from '@/components/PwdInput';
 
-import * as http from '@/http';
+import { restful } from '@/http';
 
 export default () => {
   const [visible, setVsible] = useState(false);
@@ -16,7 +16,7 @@ export default () => {
   const queryClient = useQueryClient();
 
   const updater = useMutation(
-    (data) => http.RESTful.post('/main/user/create', { data }),
+    (data) => restful.post('/main/user/create', { data }),
     {
       onSuccess() {
         queryClient.invalidateQueries('user-list');

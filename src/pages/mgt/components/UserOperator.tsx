@@ -8,7 +8,7 @@ import EmailInput from '@/components/EmailInput';
 import NameInput from '@/components/NameInput';
 import PwdInput from '@/components/PwdInput';
 
-import * as http from '@/http';
+import { restful } from '@/http';
 
 export interface User {
   id: string;
@@ -34,7 +34,7 @@ export default (props: UserOperatorProps) => {
 
   const updater = useMutation(
     (values: { [key: string]: any }) => {
-      return http.RESTful.put('/main/user/update', {
+      return restful.put('/main/user/update', {
         data: {
           uid: user.id,
           ...values,
@@ -50,7 +50,7 @@ export default (props: UserOperatorProps) => {
   );
 
   const deleter = useMutation(
-    () => http.RESTful.delete(`/main/user/remove/${user.id}`),
+    () => restful.delete(`/main/user/remove/${user.id}`),
     {
       onSuccess() {
         queryClient.invalidateQueries('user-list');

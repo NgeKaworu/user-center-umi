@@ -4,7 +4,7 @@ import { useMutation } from 'react-query';
 
 import { Button, Form } from 'antd';
 
-import * as http from '@/http';
+import { restful } from '@/http';
 
 import EmailInput from '@/components/EmailInput';
 import PwdInput from '@/components/PwdInput';
@@ -15,13 +15,13 @@ export default () => {
   const [flag, setFlag] = useState('登录');
   const history = useHistory();
 
-  const finshHandler = useMutation(
+  const finshHandler = useMutation<any>(
     (values) => {
       const urls: { [key: string]: string } = {
         登录: '/main/login',
         注册: '/main/register',
       };
-      return http.RESTful.post(urls[flag], { data: values });
+      return restful.post(urls[flag], { data: values });
     },
     {
       onSuccess(res: { data: string; ok: boolean }) {
