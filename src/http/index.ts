@@ -1,6 +1,6 @@
 import { message } from 'antd';
 
-import axios from 'axios';
+import axios, { AxiosInstance, AxiosPromise } from 'axios';
 
 import type {
   AxiosRequestConfig,
@@ -9,19 +9,28 @@ import type {
   AxiosError,
 } from 'axios';
 
-export const restful = axios.create({
-  baseURL: '/api/',
-});
+export type Notify = boolean | 'success' | 'fail';
 
-type notify = boolean | 'success' | 'fail';
-
-interface BizOptions extends AxiosRequestConfig {
+export interface CustomRequestConfig extends AxiosRequestConfig {
   // 是否捕获错误
-  errCatch?: boolean;
+  throwError?: boolean;
   // 是否通知
-  silence?: Silence;
+  notify?: Notify;
   // 是否重新登录
   reAuth?: boolean;
+}
+
+export interface CustomResponse extends AxiosResponse {
+  config: CustomRequestConfig;
+}
+
+export interface CustomInstance extends AxiosInstance {
+  (config: CustomRequestConfig): AxiosPromise;
+  (url: string, config?: CustomRequestConfig): AxiosPromise;
+}
+
+export interface CustomError extends AxiosError {
+  config: CustomRequestConfig;
 }
 
 // 状态码对映的消息
@@ -44,127 +53,120 @@ const codeMessage: { [key: number]: string } = {
   504: '网关超时。',
 };
 
-/**
- *
- * @param {url} url 请求的url
- * @param {options} Options request参数
- */
+export const restful: CustomInstance = axios.create({
+  baseURL: '/api/',
+  timeout: 10000,
+  timeoutErrorMessage: '连接超时，请检查网络后再试',
+});
 
-function request(url: string, options: BizOptions = {}) {
-  const {
-    errCatch = false,
-    silence = false,
-    reAuth = false,
-    headers,
-    ...restOptions
-  } = options;
+// header inject
+restful.interceptors.request.use(function (options) {
+  return {
+    ...options,
+    headers: {
+      ...options?.headers,
+      Authorization: `${localStorage.getItem('token')}`,
+    },
+  };
+});
 
-  // 主要业务处理
-  function bizHandler(response: AxiosResponse) {
-    if (response?.data?.ok) {
-      return response;
-    }
-
-    const bizError: AxiosError = new Error('biz error');
-    bizError.response = response;
-    throw bizError;
+// biz checked
+restful.interceptors.response.use(function (response) {
+  if (response?.data?.ok) {
+    return response;
   }
 
-  //全局成功处理
-  function successHandler(response: AxiosResponse) {
-    const { data } = response;
-    if (!(silence === true || silence === 'success')) {
-      message.success({ content: data?.message || '操作成功' });
-    }
-    return data;
+  throw new Error('biz error');
+});
+
+// success notify
+restful.interceptors.response.use(function (response: CustomResponse) {
+  const { data, config } = response;
+  if ([true, 'success']?.includes(config?.notify ?? false)) {
+    message.success({ content: data?.message || '操作成功' });
   }
+  return data;
+});
 
-  //全局错误处理
-  function errorHandler(error: BizError): any {
-    const { response, message: eMsg } = error;
-    // reAuth标记是用来防止连续401的熔断处理
+// error handler
+restful.interceptors.response.use(undefined, (error: CustomError) => {
+  const { response, message: eMsg, config } = error ?? {},
+    { reAuth, notify, throwError } = config ?? {};
+  // reAuth标记是用来防止连续401的熔断处理
 
-    if (response?.status === 401) {
-      return reAuth
-        ? reAuthorization()
-        : message.warning({
-            content: '请先登录',
-            onClose: () => {
-              localStorage.clear();
-              location.replace(`/user-center/login/`);
-            },
-          });
-    }
-    // silence标记为true 则不显示消息
-    if (!(silence === true || silence === 'fail')) {
-      const timeoutMsg = eMsg.match('timeout') && '连接超时， 请检查网络。';
-      const netErrMsg = eMsg.match('Network Error') && '网络错误，请检查网络。';
-
-      message.error({
-        content:
-          // 超时
-          timeoutMsg ||
-          netErrMsg ||
-          // 后端业务错误
-          response?.data?.errMsg ||
-          // 错误码错误
-          codeMessage[response?.status as number] ||
-          '未知错误',
-      });
-    }
-    // 阻止throw
-    if (errCatch) {
-      return response;
-    }
-
-    throw error;
+  if (response?.status === 401) {
+    return reAuth
+      ? reAuthorization(config)
+      : message.warning({
+          content: '请先登录',
+          onClose: () => {
+            localStorage.clear();
+            location.replace(`/user-center/login/`);
+          },
+        });
   }
+  // silence标记为true 则不显示消息
+  if ([true, 'fail']?.includes(notify ?? true)) {
+    const timeoutMsg = eMsg.match('timeout') && '连接超时， 请检查网络。';
+    const netErrMsg = eMsg.match('Network Error') && '网络错误，请检查网络。';
 
-  // 重新授权处理
-  function reAuthorization() {
-    return RESTful.get('/uc/oauth2/refresh', {
-      reAuth: false,
-      silence: 'success',
-      params: { token: localStorage.getStorage('refresh_token') },
-    }).then((resp: AxiosResponse) => {
-      localStorage.setItem('token', resp.data.token);
-      localStorage.setItem('refresh_token', resp.data.refresh_token);
-      return request(url, { ...options, reAuth: false });
+    message.error({
+      content:
+        // 超时
+        timeoutMsg ||
+        netErrMsg ||
+        // 后端业务错误
+        response?.data?.errMsg ||
+        // 错误码错误
+        codeMessage[response?.status as number] ||
+        '未知错误',
     });
   }
 
-  return (
-    axios(url, {
-      timeout: 10000,
-      headers: {
-        Authorization: `${localStorage.getItem('token')}`,
-        ...headers,
-      },
-      ...restOptions, // axios request options
-    })
-      // 业务pipe
-      .then(bizHandler)
-      // 请求成功pipe
-      .then(successHandler)
-      // 请求失败pipe
-      .catch(errorHandler)
-  );
+  // 阻止throw
+  if (throwError) {
+    throw error;
+  }
+
+  return response;
+});
+
+// 重新授权处理
+function reAuthorization(config: CustomRequestConfig) {
+  return restful
+    .get('/uc/oauth2/refresh', {
+      reAuth: false,
+      silence: 'success',
+      params: { token: localStorage.getStorage('refresh_token') },
+    } as CustomRequestConfig)
+    .then((resp: CustomResponse) => {
+      localStorage.setItem('token', resp.data.token);
+      localStorage.setItem('refresh_token', resp.data.refresh_token);
+      return restful({ ...config, reAuth: false });
+    });
 }
 
-export const graphql = ['query', 'mutation'].reduce(
-  (acc: { [k: string]: Function }, method) => ({
+export const graphqlMethods = ['query', 'mutation'] as const;
+
+export const graphql = graphqlMethods.reduce(
+  (acc, method) => ({
     ...acc,
-    [method]: (url: string, options?: BizOptions) => (...query: any[]) =>
-      restful.post(url, {
-        data: {
-          query: `${method} {${query[0].reduce(
-            (acc: string, cur: string, idx: number) =>
-              acc + cur + (query[idx + 1] || ''),
-            '',
-          )}}`,
-        },
-        ...options,
-      }),
+    [method]:
+      (url: string, options?: CustomRequestConfig) =>
+      (...query: any[]) =>
+        restful.post(url, {
+          data: {
+            query: `${method} {${query[0].reduce(
+              (acc: string, cur: string, idx: number) =>
+                acc + cur + (query[idx + 1] || ''),
+              '',
+            )}}`,
+          },
+          ...options,
+        }),
   }),
-  {},
+  {} as Record<
+    typeof graphqlMethods[number],
+    <T = any>(opt?: CustomRequestConfig) => Promise<T>
+  >,
 );
