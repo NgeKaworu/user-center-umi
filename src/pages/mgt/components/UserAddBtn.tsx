@@ -15,16 +15,13 @@ export default () => {
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
 
-  const updater = useMutation(
-    (data) => restful.post('/user/create', { data }),
-    {
-      onSuccess() {
-        queryClient.invalidateQueries('user-list');
-        form.resetFields();
-        visibleHandler();
-      },
+  const updater = useMutation((data) => restful.post('/user/create', data), {
+    onSuccess() {
+      queryClient.invalidateQueries('user-list');
+      form.resetFields();
+      visibleHandler();
     },
-  );
+  });
 
   function visibleHandler() {
     setVsible((s) => !s);

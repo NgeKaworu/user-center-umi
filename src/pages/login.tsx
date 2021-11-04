@@ -21,7 +21,7 @@ export default () => {
         登录: '/login',
         注册: '/register',
       };
-      return restful.post(urls[flag], { data: values });
+      return restful.post(urls[flag], values);
     },
     {
       onSuccess(res: { data: string; ok: boolean }) {

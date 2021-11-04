@@ -7,8 +7,8 @@ import type { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 export type Notify = boolean | 'success' | 'fail';
 
 export interface CustomRequestConfig<D = any> extends AxiosRequestConfig<D> {
-  // 是否捕获错误
-  throwError?: boolean;
+  // 是否偷偷摸摸抛异常
+  sneakyThrows?: boolean;
   // 是否通知
   notify?: Notify;
   // 是否重新登录
@@ -106,7 +106,17 @@ restful.interceptors.response.use(function (response) {
     return response;
   }
 
-  throw new Error('biz error');
+  const bizError: CustomError = {
+    config: response.config,
+    isAxiosError: false,
+    toJSON: () => ({}),
+    response: response,
+    request: response.request,
+    message: 'biz error',
+    name: 'biz error',
+  };
+
+  throw bizError;
 });
 
 // success notify
@@ -121,7 +131,7 @@ restful.interceptors.response.use(function (response: CustomResponse) {
 // error handler
 restful.interceptors.response.use(undefined, (error: CustomError) => {
   const { response, message: eMsg, config } = error ?? {},
-    { reAuth, notify, throwError } = config ?? {};
+    { reAuth, notify, sneakyThrows } = config ?? {};
   // reAuth标记是用来防止连续401的熔断处理
 
   if (response?.status === 401) {
@@ -135,6 +145,9 @@ restful.interceptors.response.use(undefined, (error: CustomError) => {
           },
         });
   }
+
+  console.log(error, response, eMsg, config);
+
   // silence标记为true 则不显示消息
   if ([true, 'fail']?.includes(notify ?? true)) {
     const timeoutMsg = eMsg.match('timeout') && '连接超时， 请检查网络。';
@@ -153,12 +166,12 @@ restful.interceptors.response.use(undefined, (error: CustomError) => {
     });
   }
 
-  // 阻止throw
-  if (throwError) {
-    throw error;
+  // 偷偷摸摸抛异常
+  if (sneakyThrows) {
+    return response;
   }
 
-  return response;
+  throw error;
 });
 
 // 重新授权处理
@@ -185,13 +198,11 @@ export const graphql = graphqlMethods.reduce(
       (url: string, options?: CustomRequestConfig) =>
       (...query: any[]) =>
         restful.post(url, {
-          data: {
-            query: `${method} {${query[0].reduce(
-              (acc: string, cur: string, idx: number) =>
-                acc + cur + (query[idx + 1] || ''),
-              '',
-            )}}`,
-          },
+          query: `${method} {${query[0].reduce(
+            (acc: string, cur: string, idx: number) =>
+              acc + cur + (query[idx + 1] || ''),
+            '',
+          )}}`,
           ...options,
         }),
   }),
