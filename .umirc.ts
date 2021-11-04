@@ -31,15 +31,16 @@ export default defineConfig({
     moment: 'moment',
   },
   devServer: {
-    proxy: {
-      '/user-center-go': {
-        target: 'http://user-center-go:8011',
-        changeOrigin: true,
-        pathRewrite: {
-          '/user-center-go': '',
-        },
-      },
-    },
+    port: 80,
+    // proxy: {
+    //   '/api': {
+    //     target: 'http://user-center-go',
+    //     changeOrigin: true,
+    //     pathRewrite: {
+    //       '/api': '',
+    //     },
+    //   },
+    // },
   },
   scripts: ['https://lib.baomitu.com/moment.js/latest/moment.min.js'],
   extraBabelPlugins: [

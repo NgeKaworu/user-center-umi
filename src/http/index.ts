@@ -1,22 +1,19 @@
 import { message } from 'antd';
 
-import * as proxy from './proxy';
-
 import axios from 'axios';
 
-import type { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
+import type {
+  AxiosRequestConfig,
+  AxiosResponse,
+  Method,
+  AxiosError,
+} from 'axios';
 
-declare global {
-  interface Window {
-    routerBase?: string;
-  }
-}
+export const restful = axios.create({
+  baseURL: '/api/',
+});
 
-class BizError extends Error {
-  response?: AxiosResponse;
-}
-
-type Silence = true | false | 'success' | 'fail';
+type notify = boolean | 'success' | 'fail';
 
 interface BizOptions extends AxiosRequestConfig {
   // 是否捕获错误
@@ -25,8 +22,6 @@ interface BizOptions extends AxiosRequestConfig {
   silence?: Silence;
   // 是否重新登录
   reAuth?: boolean;
-  // 是否走代理
-  coressPorxy?: boolean;
 }
 
 // 状态码对映的消息
@@ -61,12 +56,8 @@ function request(url: string, options: BizOptions = {}) {
     silence = false,
     reAuth = false,
     headers,
-    coressPorxy = true,
     ...restOptions
   } = options;
-
-  // 多host多端下的url分发机制
-  const proxyUrl = coressPorxy ? proxy.default(url, proxy.config) : url;
 
   // 主要业务处理
   function bizHandler(response: AxiosResponse) {
@@ -74,7 +65,7 @@ function request(url: string, options: BizOptions = {}) {
       return response;
     }
 
-    const bizError = new BizError('biz error');
+    const bizError: AxiosError = new Error('biz error');
     bizError.response = response;
     throw bizError;
   }
@@ -143,7 +134,7 @@ function request(url: string, options: BizOptions = {}) {
   }
 
   return (
-    axios(proxyUrl, {
+    axios(url, {
       timeout: 10000,
       headers: {
         Authorization: `${localStorage.getItem('token')}`,
@@ -160,26 +151,11 @@ function request(url: string, options: BizOptions = {}) {
   );
 }
 
-const restful = ['get', 'post', 'delete', 'put', 'patch', 'head', 'options'];
-// 注入别名
-export const RESTful = restful.reduce(
-  (acc: { [k: string]: Function }, method) => ({
-    ...acc,
-    [method]: (url: string, options?: BizOptions) =>
-      request(url, {
-        method: method as Method,
-        ...options,
-      }),
-  }),
-  {},
-);
-
-const graphql = ['query', 'mutation'];
-export const GraphQL = graphql.reduce(
+export const graphql = ['query', 'mutation'].reduce(
   (acc: { [k: string]: Function }, method) => ({
     ...acc,
     [method]: (url: string, options?: BizOptions) => (...query: any[]) =>
-      RESTful.post(url, {
+      restful.post(url, {
         data: {
           query: `${method} {${query[0].reduce(
             (acc: string, cur: string, idx: number) =>
