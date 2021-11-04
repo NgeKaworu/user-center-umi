@@ -146,8 +146,6 @@ restful.interceptors.response.use(undefined, (error: CustomError) => {
         });
   }
 
-  console.log(error, response, eMsg, config);
-
   // silence标记为true 则不显示消息
   if ([true, 'fail']?.includes(notify ?? true)) {
     const timeoutMsg = eMsg.match('timeout') && '连接超时， 请检查网络。';
