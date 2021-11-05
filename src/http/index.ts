@@ -148,13 +148,12 @@ restful.interceptors.response.use(undefined, (error: CustomError) => {
 
   // silence标记为true 则不显示消息
   if ([true, 'fail']?.includes(notify ?? true)) {
-    const timeoutMsg = eMsg.match('timeout') && '连接超时， 请检查网络。';
     const netErrMsg = eMsg.match('Network Error') && '网络错误，请检查网络。';
 
     message.error({
       content:
         // 超时
-        timeoutMsg ||
+        eMsg ||
         netErrMsg ||
         // 后端业务错误
         response?.data?.errMsg ||
@@ -192,17 +191,17 @@ export const graphqlMethods = ['query', 'mutation'] as const;
 export const graphql = graphqlMethods.reduce(
   (acc, method) => ({
     ...acc,
-    [method]:
-      (url: string, options?: CustomRequestConfig) =>
-      (...query: any[]) =>
-        restful.post(url, {
-          query: `${method} {${query[0].reduce(
-            (acc: string, cur: string, idx: number) =>
-              acc + cur + (query[idx + 1] || ''),
-            '',
-          )}}`,
-          ...options,
-        }),
+    [method]: (url: string, options?: CustomRequestConfig) => (
+      ...query: any[]
+    ) =>
+      restful.post(url, {
+        query: `${method} {${query[0].reduce(
+          (acc: string, cur: string, idx: number) =>
+            acc + cur + (query[idx + 1] || ''),
+          '',
+        )}}`,
+        ...options,
+      }),
   }),
   {} as Record<
     typeof graphqlMethods[number],
