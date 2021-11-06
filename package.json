@@ -21,24 +21,25 @@
     ]
   },
   "dependencies": {
+    "axios": "^0.24.0",
     "react": "17.x",
     "react-dom": "17.x",
-    "umi": "^3.5.20",
-    "axios": "^0.24.0",
     "react-query": "^3.31.0",
-    "styled-components": "^5.3.3"
+    "styled-components": "^5.3.3",
+    "umi": "^3.5.20"
   },
   "devDependencies": {
+    "@umijs/fabric": "^2.8.1",
     "@types/react": "^17.0.34",
     "@types/react-dom": "^17.0.11",
+    "@types/styled-components": "^5.1.15",
+    "@umijs/plugin-qiankun": "^2.35.2",
     "@umijs/preset-react": "1.x",
     "@umijs/test": "^3.5.20",
+    "babel-plugin-styled-components": "^1.13.3",
     "lint-staged": "^11.2.6",
     "prettier": "^2.4.1",
     "typescript": "^4.4.4",
-    "yorkie": "^2.0.0",
-    "@types/styled-components": "^5.1.15",
-    "@umijs/plugin-qiankun": "^2.35.2",
-    "babel-plugin-styled-components": "^1.13.3"
+    "yorkie": "^2.0.0"
   }
 }
