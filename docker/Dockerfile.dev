@@ -8,10 +8,10 @@ RUN mkdir -p /home/node/app && \
 WORKDIR /home/node/app
 
 COPY ./package.json .
-RUN npm install -f
+RUN yarn -f
 
 COPY . .
 
 ENV BRANCH = "master"
 
-CMD ["sh", "-c", "git fetch && git checkout $BRANCH -f && git pull --ff-only && npm install -f && node"]
+CMD ["sh", "-c", "git fetch && git checkout $BRANCH -f && git pull --ff-only && yarn -f && node"]
