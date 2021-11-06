@@ -112,7 +112,7 @@ restful.interceptors.response.use(function (response) {
     toJSON: () => ({}),
     response: response,
     request: response.request,
-    message: 'biz error',
+    message: response?.data?.errMsg,
     name: 'biz error',
   };
 
@@ -152,11 +152,9 @@ restful.interceptors.response.use(undefined, (error: CustomError) => {
 
     message.error({
       content:
-        // 超时
-        eMsg ||
+        // 网络错误
         netErrMsg ||
-        // 后端业务错误
-        response?.data?.errMsg ||
+        eMsg ||
         // 错误码错误
         codeMessage[response?.status as number] ||
         '未知错误',
