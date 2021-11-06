@@ -15,7 +15,7 @@ export default () => {
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
 
-  const updater = useMutation((data) => restful.post('/user/create', data), {
+  const updater = useMutation((data) => restful.post('user-center/user/create', data), {
     onSuccess() {
       queryClient.invalidateQueries('user-list');
       form.resetFields();
@@ -36,18 +36,8 @@ export default () => {
       <Button type="primary" onClick={visibleHandler}>
         新建用户
       </Button>
-      <Modal
-        visible={visible}
-        onCancel={visibleHandler}
-        title="创建用户"
-        onOk={submitHandler}
-      >
-        <SubmitForm
-          name="user-edit-form"
-          form={form}
-          onFinish={submitHandler}
-          layout="vertical"
-        >
+      <Modal visible={visible} onCancel={visibleHandler} title="创建用户" onOk={submitHandler}>
+        <SubmitForm name="user-edit-form" form={form} onFinish={submitHandler} layout="vertical">
           <EmailInput
             formItemProps={{
               label: '邮箱',

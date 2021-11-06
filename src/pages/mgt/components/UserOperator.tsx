@@ -34,7 +34,7 @@ export default (props: UserOperatorProps) => {
 
   const updater = useMutation(
     (values: { [key: string]: any }) => {
-      return restful.put('/user/update', {
+      return restful.put('user-center/user/update', {
         data: {
           uid: user.id,
           ...values,
@@ -49,7 +49,7 @@ export default (props: UserOperatorProps) => {
     },
   );
 
-  const deleter = useMutation(() => restful.delete(`/user/remove/${user.id}`), {
+  const deleter = useMutation(() => restful.delete(`user-center/user/remove/${user.id}`), {
     onSuccess() {
       queryClient.invalidateQueries('user-list');
     },
@@ -71,24 +71,11 @@ export default (props: UserOperatorProps) => {
     <Space>
       <a onClick={visibleHandler}>修改</a>
       <Divider type="vertical"></Divider>
-      <Popconfirm
-        title="删除后无法恢复！请确认删除。"
-        onConfirm={removeHandler}
-      >
+      <Popconfirm title="删除后无法恢复！请确认删除。" onConfirm={removeHandler}>
         <a style={{ color: 'red' }}>删除</a>
       </Popconfirm>
-      <Modal
-        visible={visible}
-        onCancel={visibleHandler}
-        title="修改用户"
-        onOk={submitHandler}
-      >
-        <SubmitForm
-          name="user-edit-form"
-          form={form}
-          onFinish={submitHandler}
-          layout="vertical"
-        >
+      <Modal visible={visible} onCancel={visibleHandler} title="修改用户" onOk={submitHandler}>
+        <SubmitForm name="user-edit-form" form={form} onFinish={submitHandler} layout="vertical">
           <EmailInput
             formItemProps={{
               label: '邮箱',

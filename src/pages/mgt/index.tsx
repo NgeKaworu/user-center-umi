@@ -14,24 +14,22 @@ export default () => {
   const history = useHistory();
   const _location = history.location;
 
-  const { isLoading, data: res } = useQuery(
-    ['user-list', _location?.search],
-    () => {
-      const { page, ...params }: { [key: string]: string | Number } =
-        Object.fromEntries(new URLSearchParams(_location?.search));
+  const { isLoading, data: res } = useQuery(['user-list', _location?.search], () => {
+    const { page, ...params }: { [key: string]: string | Number } = Object.fromEntries(
+      new URLSearchParams(_location?.search),
+    );
 
-      const limit = +params?.limit || 10;
-      const skip = (+page - 1) * limit || 0;
+    const limit = +params?.limit || 10;
+    const skip = (+page - 1) * limit || 0;
 
-      return restful.get('/user/list', {
-        params: {
-          skip,
-          ...params,
-        },
-        notify: 'fail',
-      });
-    },
-  );
+    return restful.get('user-center/user/list', {
+      params: {
+        skip,
+        ...params,
+      },
+      notify: 'fail',
+    });
+  });
 
   function dateFormat(date: string) {
     return date && moment(date).format('YYYY/MM/DD');

@@ -18,8 +18,8 @@ export default () => {
   const finshHandler = useMutation<any>(
     (values) => {
       const urls: { [key: string]: string } = {
-        登录: '/login',
-        注册: '/register',
+        登录: 'user-center/login',
+        注册: 'user-center/register',
       };
       return restful.post(urls[flag], values);
     },
@@ -50,18 +50,10 @@ export default () => {
             width: '100%',
           }}
         >
-          <Button
-            loading={finshHandler.isLoading}
-            type="primary"
-            htmlType="submit"
-            block
-          >
+          <Button loading={finshHandler.isLoading} type="primary" htmlType="submit" block>
             {flag}
           </Button>
-          或{' '}
-          <a onClick={toggleFlag}>
-            {flag === '登录' ? '现在注册!' : '返回登录'}
-          </a>
+          或 <a onClick={toggleFlag}>{flag === '登录' ? '现在注册!' : '返回登录'}</a>
         </Form.Item>
       </Form>
     </MediaCard>

@@ -12,7 +12,7 @@ export default () => {
   const history = useHistory();
 
   const { isLoading, data: res } = useQuery('profile', () =>
-    restful.get('/profile', { notify: 'fail' }),
+    restful.get('user-center/profile', { notify: 'fail' }),
   );
 
   function logoutHandler() {
