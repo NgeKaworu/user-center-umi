@@ -22,18 +22,10 @@ export default defineConfig({
       ],
     },
   ],
-  helmet: false,
   dva: false,
-  model: false,
-  initialState: false,
-  layout: false,
-  locale: false,
-  preact: false,
-  request: false,
-  sass: false,
   hash: true,
-  base: '/user-center',
-  publicPath: '/user-center/',
+  base: '/micro/user-center',
+  publicPath: '/micro/user-center/',
   runtimePublicPath: true,
   externals: {
     moment: 'moment',
@@ -41,11 +33,11 @@ export default defineConfig({
   devServer: {
     port: 80,
     proxy: {
-      '/user-center/api': {
+      '/api/user-center': {
         target: 'http://user-center-go-dev',
         changeOrigin: true,
         pathRewrite: {
-          '/user-center/api': '',
+          '/api/user-center': '',
         },
       },
     },
