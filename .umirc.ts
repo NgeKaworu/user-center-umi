@@ -34,7 +34,7 @@ export default defineConfig({
     port: 80,
     proxy: {
       '/api': {
-        target: 'http://user-center-go',
+        target: 'http://user-center-go-dev',
         changeOrigin: true,
         pathRewrite: {
           '/api': '',
