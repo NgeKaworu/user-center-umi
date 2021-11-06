@@ -5,11 +5,11 @@ RUN mkdir -p /home/node/app
 WORKDIR /home/node/app
 
 COPY ./package.json .
-RUN yarn -f
+RUN yarn -f --registry=http://registry.npmmirror.com
 
 COPY . .
 
-RUN yarn run build
+RUN yarn build
 
 FROM nginx:stable-alpine
 
