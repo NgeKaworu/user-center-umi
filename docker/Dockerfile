@@ -4,8 +4,8 @@ RUN mkdir -p /home/node/app
 
 WORKDIR /home/node/app
 
-COPY ./package.json .
-RUN yarn -f --registry=http://registry.npmmirror.com
+COPY package.json package-lock.json ./
+RUN NODE_ENV=production npm ci
 
 COPY . .
 
