@@ -9,7 +9,7 @@ RUN NODE_ENV=production npm ci
 
 COPY . .
 
-RUN yarn build
+RUN npm run build
 
 FROM nginx:stable-alpine
 
