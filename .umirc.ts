@@ -22,6 +22,9 @@ export default defineConfig({
       ],
     },
   ],
+  dynamicImport: {
+    loading: '@/Loading',
+  },
   helmet: false,
   dva: false,
   model: false,
@@ -35,9 +38,6 @@ export default defineConfig({
   base: '/micro/user-center',
   publicPath: '/micro/user-center/',
   runtimePublicPath: true,
-  externals: {
-    moment: 'moment',
-  },
   devServer: {
     port: 80,
     proxy: {
@@ -49,6 +49,9 @@ export default defineConfig({
         },
       },
     },
+  },
+  externals: {
+    moment: 'moment',
   },
   scripts: ['https://lib.baomitu.com/moment.js/latest/moment.min.js'],
   extraBabelPlugins: [
