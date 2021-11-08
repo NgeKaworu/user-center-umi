@@ -35,10 +35,8 @@ export default (props: UserOperatorProps) => {
   const updater = useMutation(
     (values: { [key: string]: any }) => {
       return restful.put('user-center/user/update', {
-        data: {
-          uid: user.id,
-          ...values,
-        },
+        uid: user.id,
+        ...values,
       });
     },
     {
