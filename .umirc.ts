@@ -22,9 +22,7 @@ export default defineConfig({
       ],
     },
   ],
-  dynamicImport: {
-    loading: '@/Loading',
-  },
+
   helmet: false,
   dva: false,
   model: false,
