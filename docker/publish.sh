@@ -1,5 +1,7 @@
 #!/bin/bash
 set -e
 
-docker build -f ./Dockerfile -t ngekaworu/user-center-umi ..;
-docker push ngekaworu/user-center-umi;
+tag=ngekaworu/user-center-umi
+
+docker build --file ./Dockerfile --tag ${tag} ..;
+docker push ${tag};
