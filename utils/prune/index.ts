@@ -1,16 +1,18 @@
-export default function prune(
-  objlike: Object,
-  validtor: (value: any) => boolean,
+export default function prune<T extends Record<number | string | symbol, T | any>>(
+  objLike: T,
+  validator: (value: any, key?: keyof T) => boolean,
 ) {
-  if (!validtor(objlike)) return;
-  const isArr = Array.isArray(objlike);
-  let res: any = isArr ? [] : {};
-  for (const key of Object.keys(objlike)) {
-    const origin = objlike[key];
-    const target =
-      typeof origin === 'object' ? prune(origin, validtor) : origin;
+  const keys = Object.keys(objLike);
+  if (keys?.length === 0) return;
 
-    if (validtor(origin) && validtor(target)) {
+  const isArr = Array.isArray(objLike),
+    res: any = isArr ? [] : {};
+
+  for (const key of keys) {
+    const origin = objLike[key],
+      target = typeof origin === 'object' ? prune(origin, validator) : origin;
+
+    if (validator(origin, key) && validator(target, key)) {
       if (isArr) {
         res.push(target);
       } else {
@@ -18,5 +20,6 @@ export default function prune(
       }
     }
   }
-  return res;
+
+  return Object.keys(res)?.length === 0 ? undefined : res;
 }
