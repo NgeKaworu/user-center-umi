@@ -86,7 +86,7 @@ function _pruneProps<RecordType>({
   return {
     columns: columns?.reduce?.(
       (acc: TableColumnProps<RecordType>[], { hideInTable, ...c }) =>
-        hideInTable ? acc : acc.concat(_processColumn({ ...c, ...extraColumn })),
+      hideInTable ? acc : acc.concat(_processColumn({ ...extraColumn, ...c })),
       [],
     ),
     ...pruneProps,
