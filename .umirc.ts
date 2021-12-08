@@ -1,6 +1,8 @@
 import { defineConfig } from 'umi';
+import theme from '@/theme';
 
 export default defineConfig({
+  theme,
   title: '用户中心',
   qiankun: {
     slave: {},
@@ -40,7 +42,8 @@ export default defineConfig({
     port: 80,
     proxy: {
       '/api/user-center': {
-        target: 'http://user-center-go-dev',
+        // target: 'http://user-center-go-dev',
+        target: 'http://localhost:80',
         changeOrigin: true,
         pathRewrite: {
           '/api/user-center': '',

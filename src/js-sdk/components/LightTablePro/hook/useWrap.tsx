@@ -3,9 +3,10 @@ import { Form } from 'antd';
 import type { FormProps, TableProps, PaginationProps } from 'antd';
 import type React from 'react';
 import { useState, useRef } from 'react';
-import type { ActionRef, LightTableProps } from '../../LightTable';
+import type { LightTableProps } from '../../LightTable';
 import type { QueryKey, QueryFunction, UseQueryOptions } from 'react-query';
 import { useQuery } from 'react-query';
+import { ActionRef } from '../';
 
 type RequestParameters<RecordType> = Parameters<
   NonNullable<LightTableProps<RecordType>['onChange']>

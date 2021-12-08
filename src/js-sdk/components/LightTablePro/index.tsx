@@ -2,7 +2,7 @@ import { Card } from 'antd';
 import type { FormInstance, FormProps } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
-import type { ActionRef, LightColumnProps, LightTableProps } from '../LightTable';
+import type { LightColumnProps, LightTableProps } from '../LightTable';
 import LightTable from '../LightTable';
 import type { SearchColumnsProps } from '../Search';
 import Search from '../Search';
@@ -32,6 +32,12 @@ const SpaceBetween = styled.div`
 type RequestParameters<RecordType> = Parameters<
   NonNullable<LightTableProps<RecordType>['onChange']>
 >;
+
+export interface ActionRef {
+  reload?: () => void;
+  reloadAndReset?: () => void;
+  reset?: () => void;
+}
 
 export interface LightTableProProps<RecordType>
   extends Omit<LightTableProps<RecordType>, 'columns'> {
