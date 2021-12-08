@@ -45,7 +45,7 @@ export default abstract class Chain<N extends { next?: N }> {
     if (this.Find((i) => i === t) == null) throw new Error('target node not in this chain');
 
     const l = n.length;
-    if (l === 0) return;
+    if (l === 0) return this;
 
     for (let i = 1; i < l; i++) {
       n[i - 1].next = n[i];
@@ -63,7 +63,7 @@ export default abstract class Chain<N extends { next?: N }> {
     if (this.Find((i) => i === t) == null) throw new Error('target node not in this chain');
 
     const l = n.length;
-    if (l === 0) return;
+    if (l === 0) return this;
 
     for (let i = 1; i < l; i++) {
       n[i - 1].next = n[i];

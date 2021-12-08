@@ -125,7 +125,7 @@ function _tsumugi<RecordType>(
     let tmp = v;
 
     for (const n of chain) {
-      tmp = n?.render?.(tmp, r, i);
+      tmp = n?.render?.(tmp, r, i, v);
     }
 
     return tmp;
