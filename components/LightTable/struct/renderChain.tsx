@@ -1,5 +1,5 @@
-import Chain from '@/struct/chain';
-import type { Node } from '@/struct/chain';
+import Chain from '../../../struct/chain';
+import type { Node } from '../../../struct/chain';
 import type { TableColumnProps } from 'antd';
 
 export type Render<RecordType extends Record<any, any> = any> = (

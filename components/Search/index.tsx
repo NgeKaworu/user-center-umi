@@ -1,37 +1,33 @@
-import theme from "@/../config/theme";
-import type { ReactElement, ReactNode } from "react";
-import React, { createElement, useRef } from "react";
-import type { ColProps } from "antd";
-import { Button, Col, Form, Input, Row, Space } from "antd";
-import type { FormItemProps, TableColumnProps } from "antd";
-import type { FormInstance, FormProps } from "antd/lib/form/Form";
-import SearchForm from "../SearchForm";
-import valueTypeRegister from "./valueTypeRegister";
-import SearchSelect from "../SearchSelect";
-import type { ValueEnum, ValueType } from "../type";
+import theme from '../../../theme';
+import type { ReactElement, ReactNode } from 'react';
+import React, { createElement, useRef } from 'react';
+import type { ColProps } from 'antd';
+import { Button, Col, Form, Input, Row, Space } from 'antd';
+import type { FormItemProps, TableColumnProps } from 'antd';
+import type { FormInstance, FormProps } from 'antd/lib/form/Form';
+import SearchForm from '../SearchForm';
+import valueTypeRegister from './valueTypeRegister';
+import SearchSelect from '../SearchSelect';
+import type { ValueEnum, ValueType } from '../type';
 
 const FormItem = Form.Item;
-const { "primary-color": primaryColor } = theme;
+const { 'primary-color': primaryColor } = theme;
 
 export interface SearchColumnsProps<RecordType> {
   isCollapsed?: boolean;
-  bordered?: boolean;
   colSize?: number;
-  dataIndex?: TableColumnProps<RecordType>["dataIndex"];
-  title?: TableColumnProps<RecordType>["title"];
+  dataIndex?: TableColumnProps<RecordType>['dataIndex'];
+  title?: TableColumnProps<RecordType>['title'];
   order?: number;
   colSpan?: number;
-  renderItem?: (
-    col: SearchColumnsProps<RecordType>,
-    colProps: ColProps
-  ) => ReactElement;
+  renderItem?: (col: SearchColumnsProps<RecordType>, colProps: ColProps) => ReactElement;
   formItemProps?: FormItemProps;
   valueType?: ValueType;
-  tooltip?: FormItemProps["tooltip"];
+  tooltip?: FormItemProps['tooltip'];
   renderFormItem?: (
     c: SearchColumnsProps<RecordType>,
     defaultRender: ReactNode,
-    form: FormInstance
+    form: FormInstance,
   ) => ReactNode;
   valueEnum?: ValueEnum;
   hideInSearch?: boolean;
@@ -71,7 +67,7 @@ export default <RecordType extends Record<any, any> = any>({
   }
 
   return (
-    <SearchForm formProps={{ labelAlign: "left", ...formProps, onFinish }}>
+    <SearchForm formProps={{ labelAlign: 'left', ...formProps, onFinish }}>
       <Row style={{ margin: 0 }} gutter={16}>
         {/**
          * 渲染逻辑
@@ -81,14 +77,14 @@ export default <RecordType extends Record<any, any> = any>({
 
         {columns?.reduce((acc: JSX.Element[], cur, idx) => {
           const { isCollapsed, order, colSpan, colSize, hideInSearch } = cur,
-            dataIndex = cur.dataIndex as FormItemProps["name"],
-            style = isCollapsed ? { background: "#E8EAEC" } : {},
+            dataIndex = cur.dataIndex as FormItemProps['name'],
+            style = isCollapsed ? { background: '#E8EAEC' } : {},
             // 倍数 兼容 新旧api
             mulSpan = colSpan || colSize || 1;
           const mulColProp: any = { ...defaultCol };
           if (mulSpan !== 1) {
             for (const k in mulColProp) {
-              if (typeof mulColProp?.[k] === "number") {
+              if (typeof mulColProp?.[k] === 'number') {
                 const calc = mulColProp?.[k] * mulSpan;
                 mulColProp[k] = calc > 24 ? 24 : calc;
               }
@@ -111,20 +107,15 @@ export default <RecordType extends Record<any, any> = any>({
             ? acc
             : acc.concat(
                 cur?.renderItem?.({ ...cur, formItemProps }, colProp) ?? (
-                  <Col {...colProp}>
-                    {renderItem({ ...cur, formItemProps }, innerForm)}
-                  </Col>
-                )
+                  <Col {...colProp}>{renderItem({ ...cur, formItemProps }, innerForm)}</Col>
+                ),
               );
         }, [])}
 
-        <Col order={24} flex={"auto"}>
-          <Form.Item style={{ float: "right" }}>
+        <Col order={24} flex={'auto'}>
+          <Form.Item style={{ float: 'right' }}>
             <Space>
-              <Button
-                htmlType="submit"
-                style={{ borderColor: primaryColor, color: primaryColor }}
-              >
+              <Button htmlType="submit" style={{ borderColor: primaryColor, color: primaryColor }}>
                 查询
               </Button>
 
@@ -146,19 +137,9 @@ export default <RecordType extends Record<any, any> = any>({
  * @param form form实例，col内的renderFormItem需要此参数
  * @returns FormItem实例
  */
-function renderItem<RecordType>(
-  col: SearchColumnsProps<RecordType>,
-  form: FormInstance
-) {
-  const {
-      title,
-      tooltip,
-      formItemProps,
-      renderFormItem,
-      bordered,
-      hideInSearch,
-    } = col,
-    dataIndex = col.dataIndex as FormItemProps["name"],
+function renderItem<RecordType>(col: SearchColumnsProps<RecordType>, form: FormInstance) {
+  const { title, tooltip, formItemProps, renderFormItem, hideInSearch } = col,
+    dataIndex = col.dataIndex as FormItemProps['name'],
     Ele = renderCol(col),
     noStyle = Ele?.props?._just_placeholder;
 
@@ -168,15 +149,10 @@ function renderItem<RecordType>(
       label={title}
       name={dataIndex}
       tooltip={tooltip}
-      bordered={bordered}
       noStyle={noStyle}
       {...formItemProps}
     >
-      {renderFormItem?.(
-        col as any,
-        { type: "form", defaultRender: () => Ele },
-        form
-      ) ?? Ele}
+      {renderFormItem?.(col as any, { type: 'form', defaultRender: () => Ele }, form) ?? Ele}
     </FormItem>
   );
 }
@@ -186,16 +162,14 @@ function renderItem<RecordType>(
  * @param valueEnum 兼容pro-table的value枚举，支持Record和Map
  * @returns entries 数组[[k1, v1], [k2, v2]]
  */
-export function getValueEnum(
-  valueEnum: Map<any, any> | Record<any, any> | undefined
-) {
+export function getValueEnum(valueEnum: Map<any, any> | Record<any, any> | undefined) {
   if (valueEnum instanceof Map) {
     return valueEnum?.entries();
-  } else if (typeof valueEnum === "object") {
+  } else if (typeof valueEnum === 'object') {
     return Object?.entries(valueEnum);
   }
 
-  console.warn("invalid valueEnum ", valueEnum);
+  console.warn('invalid valueEnum ', valueEnum);
   return [];
 }
 
@@ -220,14 +194,14 @@ function renderCol<RecordType>(col: SearchColumnsProps<RecordType>) {
     }
   }
 
-  if (typeof valueType === "string") {
+  if (typeof valueType === 'string') {
     [Comp, defaultProps] = valueTypeRegister[valueType];
   } else if (valueType === undefined && valueEnum !== undefined) {
     Comp = SearchSelect;
-    defaultProps = { placeholder: "请选择" };
+    defaultProps = { placeholder: '请选择' };
   } else {
     Comp = Input;
-    defaultProps = { placeholder: "请输入" };
+    defaultProps = { placeholder: '请输入' };
   }
 
   return createElement(Comp, {

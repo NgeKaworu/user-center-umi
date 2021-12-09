@@ -10,9 +10,10 @@ import { Typography } from 'antd';
 
 import { getValueEnumValue } from '../type';
 import { _valueTypeRegister } from './valueTypeRegister';
-import prune from '@/utils/prune';
-import trimEndWith from '@/utils/trimEndWith';
-import isValidValue from '@/utils/isValidValue';
+import prune from '../../utils/prune';
+import trimEndWith from '../../utils/trimEndWith';
+import isValidValue from '../../utils/isValidValue';
+import React from 'react';
 
 const { Paragraph, Link } = Typography;
 
@@ -56,12 +57,6 @@ export const renderKey = [
 
 export const allRenderKey = [...globalRenderKey, ...renderKey] as const;
 
-export interface ActionRef {
-  reload?: () => void;
-  reloadAndReset?: () => void;
-  reset?: () => void;
-}
-
 export default <RecordType extends Record<any, any> = any>(props: LightTableProps<RecordType>) => (
   <Table {..._pruneProps(props)} />
 );
@@ -86,7 +81,7 @@ function _pruneProps<RecordType>({
   return {
     columns: columns?.reduce?.(
       (acc: TableColumnProps<RecordType>[], { hideInTable, ...c }) =>
-      hideInTable ? acc : acc.concat(_processColumn({ ...extraColumn, ...c })),
+        hideInTable ? acc : acc.concat(_processColumn({ ...extraColumn, ...c })),
       [],
     ),
     ...pruneProps,
