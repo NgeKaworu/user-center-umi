@@ -7,6 +7,6 @@ export default interface Perm {
   updateAt: string; // 更新时间
 
   // menu
-  path: string[]; // 族谱
-  url: string; // url
+  pid?: string; // 父id
+  url?: string; // url
 }

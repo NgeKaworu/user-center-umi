@@ -18,7 +18,6 @@ export default () => {
     { dataIndex: 'key', title: 'key', hideInSearch: true },
     { dataIndex: 'createAt', title: '创建时间', valueType: 'dateTime', hideInSearch: true },
     { dataIndex: 'updateAt', title: '更新时间', valueType: 'dateTime', hideInSearch: true },
-    { dataIndex: 'path', title: 'path', hideInSearch: true },
     { dataIndex: 'url', title: 'url', hideInSearch: true },
     {
       dataIndex: 'id',
@@ -87,7 +86,7 @@ export default () => {
             data: res?.data || [],
             page: pagination?.current || 1,
             success: true,
-            total: res?.data?.total || 0,
+            total: res?.total || 0,
           };
         }}
       />
