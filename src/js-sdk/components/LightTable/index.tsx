@@ -193,7 +193,7 @@ function _factory<RecordType>(
   const ret: Render<RecordType> = {
     basicRender: render ?? ((v) => v),
     valueEnumRender: (value) => (valueEnum ? getValueEnumValue?.(valueEnum, value) : undefined),
-    valueTypeRender: valueType ? _valueTypeRegister<RecordType>(valueType) : undefined,
+    valueTypeRender: valueType ? _safeRender(_valueTypeRegister<RecordType>(valueType)) : undefined,
 
     paragraphRender: _safeRender((v) => {
       const children = (

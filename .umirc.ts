@@ -1,5 +1,6 @@
 import { defineConfig } from 'umi';
-import theme from '@/theme';
+import theme from './src/theme';
+import routes from './routes';
 
 export default defineConfig({
   theme,
@@ -11,19 +12,7 @@ export default defineConfig({
   nodeModulesTransform: {
     type: 'none',
   },
-  routes: [
-    {
-      path: '/',
-      component: '@/layouts/',
-      routes: [
-        { path: '/', redirect: '/profile/' },
-        { path: '/profile/', component: 'profile' },
-        { path: '/login/', component: 'login' },
-        { path: '/mgt/', component: 'mgt' },
-        // { redirect: '/profile/' },
-      ],
-    },
-  ],
+  routes,
 
   helmet: false,
   dva: false,
@@ -43,7 +32,7 @@ export default defineConfig({
     proxy: {
       '/api/user-center': {
         // target: 'http://user-center-go-dev',
-        target: 'http://localhost:80',
+        target: 'http://localhost:8088',
         changeOrigin: true,
         pathRewrite: {
           '/api/user-center': '',
