@@ -65,10 +65,10 @@ export default ({
       let opt: PermOpt = {
         ...p,
         label: p.name,
-        value: p.id,
-        genealogy: (pNode?.genealogy ?? []).concat(p.id),
+        value: p.key,
+        genealogy: (pNode?.genealogy ?? []).concat(p.key),
       };
-      if (p.pid === pNode?.id) {
+      if (p.pKey === pNode?.key) {
         matched.push(opt);
       } else {
         mismatched.push(opt);
@@ -105,14 +105,14 @@ export default ({
       >
         <Input placeholder="请输入" />
       </Item>
-      <Item dependencies={['id']} noStyle>
+      <Item dependencies={['key']} noStyle>
         {({ getFieldValue }) => {
-          const id = getFieldValue(['id']),
+          const key = getFieldValue(['key']),
             validOpt = dfsMap<Partial<PermOpt>>(
               { children: genTree(perms?.data?.data) },
               'children',
               (t) =>
-                t?.genealogy?.includes(id)
+                t?.genealogy?.includes(key)
                   ? {
                       ...t,
                       disabled: true,
@@ -122,7 +122,7 @@ export default ({
             ).children;
 
           return (
-            <Item name="pid" label="父ID">
+            <Item name="pKey" label="父级key">
               {compose<any>(
                 IOC([
                   Format({
@@ -131,7 +131,7 @@ export default ({
                       dfs<Partial<PermOpt>>(
                         { children: validOpt },
                         'children',
-                        (t) => t.id === value,
+                        (t) => t.key === value,
                       )?.genealogy,
                   }),
                 ]),

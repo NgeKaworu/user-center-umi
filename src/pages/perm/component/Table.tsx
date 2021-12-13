@@ -15,10 +15,11 @@ export default () => {
   const columns: LightTableProColumnProps<Perm & { keyword?: string }>[] = [
     { dataIndex: 'keyword', title: '关键字', hideInTable: true },
     { dataIndex: 'name', title: '权限名', hideInSearch: true },
-    { dataIndex: 'key', title: 'key', hideInSearch: true },
+    { dataIndex: 'key', title: 'key', hideInSearch: true, copyable: true },
     { dataIndex: 'createAt', title: '创建时间', valueType: 'dateTime', hideInSearch: true },
     { dataIndex: 'updateAt', title: '更新时间', valueType: 'dateTime', hideInSearch: true },
-    { dataIndex: 'url', title: 'url', hideInSearch: true },
+    { dataIndex: 'pKey', title: '父级Key', hideInSearch: true, copyable: true },
+    { dataIndex: 'url', title: 'url', hideInSearch: true, copyable: true },
     {
       dataIndex: 'id',
       title: '操作',

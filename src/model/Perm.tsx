@@ -7,6 +7,6 @@ export default interface Perm {
   updateAt: string; // 更新时间
 
   // menu
-  pid?: string; // 父id
+  pKey?: string; // 父级key
   url?: string; // url
 }
