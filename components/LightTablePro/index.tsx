@@ -1,33 +1,12 @@
 import { Card } from 'antd';
 import type { FormInstance, FormProps } from 'antd';
-import React from 'react';
-import styled from 'styled-components';
 import type { LightColumnProps, LightTableProps } from '../LightTable';
 import LightTable from '../LightTable';
 import type { SearchColumnsProps } from '../Search';
 import Search from '../Search';
 import type { QueryKey, QueryFunction, UseQueryOptions } from 'react-query';
 import useWrap from './hook/useWrap';
-
-const Space = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  overflow: visible;
-`;
-
-const SpaceBetween = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  gap: 16px;
-  overflow: visible;
-  justify-content: space-between;
-
-  background-color: #fff;
-`;
+import styles from './index.less';
 
 type RequestParameters<RecordType> = Parameters<
   NonNullable<LightTableProps<RecordType>['onChange']>
@@ -39,6 +18,9 @@ export interface ActionRef {
   reset?: () => void;
 }
 
+export interface LightTableProColumnProps<RecordType>
+  extends LightColumnProps<RecordType>,
+    SearchColumnsProps<RecordType> {}
 export interface LightTableProProps<RecordType>
   extends Omit<LightTableProps<RecordType>, 'columns'> {
   formRef?: React.MutableRefObject<FormInstance | undefined>;
@@ -75,10 +57,6 @@ export interface LightTableProProps<RecordType>
   toolBarRender?: React.ReactNode;
 }
 
-export interface LightTableProColumnProps<RecordType>
-  extends LightColumnProps<RecordType>,
-    SearchColumnsProps<RecordType> {}
-
 export default function LightTablePro<RecordType extends Record<any, any> = any>({
   columns,
   formRef,
@@ -107,16 +85,16 @@ export default function LightTablePro<RecordType extends Record<any, any> = any>
     pagination,
   });
 
-  if (formRef?.current) {
+  if (formRef) {
     formRef.current = innerFormRef.current;
   }
 
-  if (actionRef?.current) {
+  if (actionRef) {
     actionRef.current = innerActionRef.current;
   }
 
   return (
-    <Space>
+    <div className={`${styles.flex} ${styles.column}`}>
       <Search
         columns={columns}
         formProps={{
@@ -126,11 +104,11 @@ export default function LightTablePro<RecordType extends Record<any, any> = any>
       />
       {children}
       <Card>
-        <Space>
-          <SpaceBetween>
+        <div className={`${styles.flex} ${styles.column}`}>
+          <div className={`${styles.flex} ${styles?.['space-between']}`}>
             <div>{headerTitle}</div>
             <div>{toolBarRender}</div>
-          </SpaceBetween>
+          </div>
 
           <LightTable<RecordType>
             size="small"
@@ -141,8 +119,8 @@ export default function LightTablePro<RecordType extends Record<any, any> = any>
             {...tableHandler}
             {...props}
           />
-        </Space>
+        </div>
       </Card>
-    </Space>
+    </div>
   );
 }

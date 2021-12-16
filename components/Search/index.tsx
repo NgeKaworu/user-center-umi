@@ -1,6 +1,5 @@
-import theme from '../../../theme';
 import type { ReactElement, ReactNode } from 'react';
-import React, { createElement, useRef } from 'react';
+import { createElement, useRef } from 'react';
 import type { ColProps } from 'antd';
 import { Button, Col, Form, Input, Row, Space } from 'antd';
 import type { FormItemProps, TableColumnProps } from 'antd';
@@ -11,7 +10,6 @@ import SearchSelect from '../SearchSelect';
 import type { ValueEnum, ValueType } from '../type';
 
 const FormItem = Form.Item;
-const { 'primary-color': primaryColor } = theme;
 
 export interface SearchColumnsProps<RecordType> {
   isCollapsed?: boolean;
@@ -115,7 +113,7 @@ export default <RecordType extends Record<any, any> = any>({
         <Col order={24} flex={'auto'}>
           <Form.Item style={{ float: 'right' }}>
             <Space>
-              <Button htmlType="submit" style={{ borderColor: primaryColor, color: primaryColor }}>
+              <Button htmlType="submit" type="primary" ghost>
                 查询
               </Button>
 
@@ -208,7 +206,6 @@ function renderCol<RecordType>(col: SearchColumnsProps<RecordType>) {
     ...defaultProps,
     options,
     ...fieldProps,
-    bordered: false,
     allowClear: true,
   });
 }
