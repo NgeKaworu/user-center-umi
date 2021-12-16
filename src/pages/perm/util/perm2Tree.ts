@@ -8,8 +8,8 @@ export interface PermOpt extends Perm {
   genealogy?: Perm['id'][];
 }
 
-export default function perm2Tree(
-  origin: Perm[] = [],
+function _perm2Tree(
+  origin: Perm[],
   pNode?: PermOpt,
 ): { matched: PermOpt[]; mismatched: PermOpt[] } {
   let _matched: PermOpt[] = [],
@@ -32,7 +32,7 @@ export default function perm2Tree(
   let solution: PermOpt[] = [];
 
   for (const match of _matched) {
-    let { matched, mismatched } = perm2Tree(_mismatched, match);
+    let { matched, mismatched } = _perm2Tree(_mismatched, match);
     solution.push({ ...match, children: matched });
     _mismatched = mismatched;
   }
@@ -42,3 +42,5 @@ export default function perm2Tree(
     mismatched: _mismatched,
   };
 }
+
+export default (origin?: Perm[]) => _perm2Tree(origin ?? []).matched;

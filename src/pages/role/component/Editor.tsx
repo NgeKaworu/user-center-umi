@@ -1,13 +1,13 @@
-import { Form, Input, Tooltip, TreeSelect } from 'antd';
+import { Form, TreeSelect, Input } from 'antd';
 
 import ModalForm from '@/js-sdk/components/ModalForm';
 import type useModalForm from '@/js-sdk/components/ModalForm/useModalForm';
 
-import { update, create, list, validateKey } from '../api';
+import { list } from '../../perm/api';
+import { update, create, validateKey } from '../api';
 import { useQuery } from 'react-query';
-import { dfsMap } from '@/js-sdk/utils/dfs';
-import perm2Tree, { PermOpt } from '../util/perm2Tree';
-import permFilter from '../util/permFilter';
+import perm2Tree from '@/pages/perm/util/perm2Tree';
+import permFilter from '@/pages/perm/util/permFilter';
 
 const { Item } = Form;
 
@@ -39,7 +39,6 @@ export default ({
       await api(value);
       await onSuccess?.();
       setModalProps((pre) => ({ ...pre, visible: false }));
-      perms.refetch();
       form.resetFields();
     } finally {
       setModalProps((pre) => ({ ...pre, confirmLoading: false }));
@@ -51,12 +50,12 @@ export default ({
       formProps={{ onFinish: onSubmit, ...formProps }}
       modalProps={{ onOk: onSubmit, ...modalProps }}
     >
-      <Item name="name" label="权限名" rules={[{ required: true }]}>
+      <Item name="name" label="角色名" rules={[{ required: true }]}>
         <Input placeholder="请输入" />
       </Item>
       <Item
         name="id"
-        label="权限标识"
+        label="角色标识"
         rules={[
           { required: true },
           {
@@ -67,38 +66,18 @@ export default ({
       >
         <Input placeholder="请输入" disabled={inEdit} />
       </Item>
-      <Item dependencies={['id']} noStyle>
-        {({ getFieldValue }) => {
-          const id = getFieldValue(['id']),
-            validOpt = dfsMap<Partial<PermOpt>>(
-              { children: perm2Tree(perms?.data?.data) },
-              'children',
-              (t) =>
-                t?.genealogy?.includes(id)
-                  ? {
-                      ...t,
-                      disabled: true,
-                      name: <Tooltip title="不能选子孙节点">{t.label}</Tooltip>,
-                    }
-                  : t,
-            ).children;
-
-          return (
-            <Item name="pID" label="父级id">
-              <TreeSelect
-                placeholder="请选择"
-                treeNodeLabelProp="name"
-                treeLine
-                treeData={validOpt}
-                showSearch
-                filterTreeNode={permFilter}
-              />
-            </Item>
-          );
-        }}
-      </Item>
-      <Item name="url" label="url">
-        <Input placeholder="请输入" />
+      <Item name="perms" label="拥有权限">
+        <TreeSelect
+          placeholder="请选择"
+          treeNodeLabelProp="name"
+          treeData={perm2Tree(perms?.data?.data)}
+          filterTreeNode={permFilter}
+          treeLine
+          showSearch
+          multiple
+          treeCheckable
+          showCheckedStrategy="SHOW_ALL"
+        />
       </Item>
     </ModalForm>
   );

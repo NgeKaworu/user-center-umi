@@ -8,6 +8,7 @@ export default [
       { path: '/login/', component: 'login' },
       { path: '/mgt/', component: 'mgt' },
       { path: '/perm/', component: 'perm' },
+      { path: '/role/', component: 'role' },
       // { redirect: '/profile/' },
     ],
   },
