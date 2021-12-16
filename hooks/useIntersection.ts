@@ -5,7 +5,6 @@ export default (ref: React.MutableRefObject<HTMLElement | null>) => {
   const [contentRect, setContentRect] = useState<IntersectionObserverEntry>();
 
   const intersectionObserver = new IntersectionObserver((entries) => {
-    console.log('entries', entries);
     setContentRect(entries?.[0]);
   });
 
