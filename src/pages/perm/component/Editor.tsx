@@ -7,7 +7,6 @@ import type useModalForm from '@/js-sdk/components/ModalForm/useModalForm';
 import { update, create, list, validateKey } from '../api';
 import { useQuery } from 'react-query';
 import Perm from '@/model/Perm';
-import setTo, { Pointer } from '@/js-sdk/utils/setTo';
 import { compose } from '@/js-sdk/decorators/utils';
 import { ReactElement, ReactNode } from 'react';
 import { IOC } from '@/js-sdk/decorators/hoc';
@@ -32,6 +31,7 @@ export default ({
 }: ReturnType<typeof useModalForm> & {
   onSuccess?: (...args: any) => void;
 }) => {
+  const inEdit = modalProps?.title === '编辑';
   const perms = useQuery(['user-center/perm/list', 'infinity'], () =>
     list({ params: { limit: 0 } }),
   );
@@ -41,7 +41,7 @@ export default ({
     try {
       setModalProps((pre) => ({ ...pre, confirmLoading: true }));
       let api;
-      if (value?.id) {
+      if (inEdit) {
         api = update;
       } else {
         api = create;
@@ -65,10 +65,10 @@ export default ({
       let opt: PermOpt = {
         ...p,
         label: p.name,
-        value: p.key,
-        genealogy: (pNode?.genealogy ?? []).concat(p.key),
+        value: p.id,
+        genealogy: (pNode?.genealogy ?? []).concat(p.id),
       };
-      if (p.pKey === pNode?.key) {
+      if (p.pID === pNode?.id) {
         matched.push(opt);
       } else {
         mismatched.push(opt);
@@ -85,34 +85,30 @@ export default ({
       formProps={{ onFinish: onSubmit, ...formProps }}
       modalProps={{ onOk: onSubmit, ...modalProps }}
     >
-      <Item name="id" hidden>
-        <Input placeholder="请输入" disabled />
-      </Item>
-
       <Item name="name" label="权限名" rules={[{ required: true }]}>
         <Input placeholder="请输入" />
       </Item>
       <Item
-        name="key"
+        name="id"
         label="权限标识"
         rules={[
           { required: true },
-          ({ getFieldValue }) => ({
-            validator: (_, key) =>
-              validateKey({ params: { key, id: getFieldValue(['id']) }, notify: false }),
-          }),
+          {
+            validator: (_, id) =>
+              inEdit ? Promise.resolve() : validateKey({ params: { id }, notify: false }),
+          },
         ]}
       >
-        <Input placeholder="请输入" />
+        <Input placeholder="请输入" disabled={inEdit} />
       </Item>
-      <Item dependencies={['key']} noStyle>
+      <Item dependencies={['id']} noStyle>
         {({ getFieldValue }) => {
-          const key = getFieldValue(['key']),
+          const id = getFieldValue(['id']),
             validOpt = dfsMap<Partial<PermOpt>>(
-              { children: genTree(perms?.data?.data) },
+              { children: genTree(perms?.data?.data ?? []) },
               'children',
               (t) =>
-                t?.genealogy?.includes(key)
+                t?.genealogy?.includes(id)
                   ? {
                       ...t,
                       disabled: true,
@@ -121,8 +117,10 @@ export default ({
                   : t,
             ).children;
 
+          console.log(validOpt);
+
           return (
-            <Item name="pKey" label="父级key">
+            <Item name="pID" label="父级id">
               {compose<any>(
                 IOC([
                   Format({
@@ -131,8 +129,8 @@ export default ({
                       dfs<Partial<PermOpt>>(
                         { children: validOpt },
                         'children',
-                        (t) => t.key === value,
-                      )?.genealogy,
+                        (t) => t.id === value,
+                      )?.genealogy ?? [value],
                   }),
                 ]),
               )(
