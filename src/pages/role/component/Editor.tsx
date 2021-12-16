@@ -68,6 +68,7 @@ export default ({
       </Item>
       <Item name="perms" label="拥有权限">
         <TreeSelect
+          treeDefaultExpandAll
           placeholder="请选择"
           treeNodeLabelProp="name"
           treeData={perm2Tree(perms?.data?.data)}

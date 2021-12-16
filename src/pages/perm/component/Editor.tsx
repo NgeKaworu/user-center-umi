@@ -86,6 +86,7 @@ export default ({
           return (
             <Item name="pID" label="父级id">
               <TreeSelect
+                treeDefaultExpandAll
                 placeholder="请选择"
                 treeNodeLabelProp="name"
                 treeLine
