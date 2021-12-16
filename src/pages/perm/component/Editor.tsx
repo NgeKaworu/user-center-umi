@@ -1,26 +1,15 @@
-import { Form, Cascader, Input, Popconfirm, Tooltip } from 'antd';
-import type { CascaderProps } from 'antd';
+import { Form, Input, Tooltip, TreeSelect } from 'antd';
 
 import ModalForm from '@/js-sdk/components/ModalForm';
 import type useModalForm from '@/js-sdk/components/ModalForm/useModalForm';
 
 import { update, create, list, validateKey } from '../api';
 import { useQuery } from 'react-query';
-import Perm from '@/model/Perm';
-import { compose } from '@/js-sdk/decorators/utils';
-import { ReactElement, ReactNode } from 'react';
-import { IOC } from '@/js-sdk/decorators/hoc';
-import Format from '@/js-sdk/decorators/Format';
 import dfs, { dfsMap } from '@/js-sdk/utils/dfs';
+import perm2Tree, { PermOpt } from '../util/perm2Tree';
+import { filter } from '@/js-sdk/decorators/Select/Search';
 
 const { Item } = Form;
-
-interface PermOpt extends Perm {
-  label: ReactNode;
-  value: Perm['id'];
-  children?: PermOpt[];
-  genealogy?: Perm['id'][];
-}
 
 export default ({
   formProps,
@@ -57,41 +46,6 @@ export default ({
     }
   }
 
-  function genTree(
-    origin: Perm[] = [],
-    pNode?: PermOpt,
-  ): { matched: PermOpt[]; mismatched: PermOpt[] } {
-    let _matched: PermOpt[] = [],
-      _mismatched: PermOpt[] = [];
-
-    for (const p of origin) {
-      let opt: PermOpt = {
-        ...p,
-        label: p.name,
-        value: p.id,
-        genealogy: (pNode?.genealogy ?? []).concat(p.id),
-      };
-      if (p.pID === pNode?.id) {
-        _matched.push(opt);
-      } else {
-        _mismatched.push(opt);
-      }
-    }
-
-    let solution: PermOpt[] = [];
-
-    for (const match of _matched) {
-      let { matched, mismatched } = genTree(_mismatched, match);
-      solution.push({ ...match, children: matched });
-      _mismatched = mismatched;
-    }
-
-    return {
-      matched: solution,
-      mismatched: _mismatched,
-    };
-  }
-
   return (
     <ModalForm
       formProps={{ onFinish: onSubmit, ...formProps }}
@@ -117,7 +71,7 @@ export default ({
         {({ getFieldValue }) => {
           const id = getFieldValue(['id']),
             validOpt = dfsMap<Partial<PermOpt>>(
-              { children: genTree(perms?.data?.data ?? []).matched },
+              { children: perm2Tree(perms?.data?.data ?? []).matched },
               'children',
               (t) =>
                 t?.genealogy?.includes(id)
@@ -129,43 +83,18 @@ export default ({
                   : t,
             ).children;
 
-          console.log(validOpt);
-
           return (
             <Item name="pID" label="父级id">
-              {compose<any>(
-                IOC([
-                  Format({
-                    f: (value) => (value?.length ? value?.[value?.length - 1] : ''),
-                    g: (value) =>
-                      dfs<Partial<PermOpt>>(
-                        { children: validOpt },
-                        'children',
-                        (t) => t.id === value,
-                      )?.genealogy ?? [value],
-                  }),
-                ]),
-              )(
-                <Cascader
-                  placeholder="请选择"
-                  options={validOpt}
-                  changeOnSelect
-                  showSearch={{
-                    filter: (input, path) =>
-                      path?.some(
-                        (option) =>
-                          option?.value
-                            ?.toString()
-                            ?.toLowerCase()
-                            ?.includes(input?.toString()?.toLowerCase()) ||
-                          option?.label
-                            ?.toString()
-                            ?.toLowerCase()
-                            ?.includes(input?.toString()?.toLowerCase()),
-                      ),
-                  }}
-                />,
-              )}
+              <TreeSelect
+                placeholder="请选择"
+                treeNodeLabelProp="label"
+                treeLine
+                treeData={validOpt}
+                showSearch
+                filterTreeNode={(input, treeNode) =>
+                  !!(treeNode && dfs(treeNode, 'children', (cur) => filter(input, cur)))
+                }
+              />
             </Item>
           );
         }}
