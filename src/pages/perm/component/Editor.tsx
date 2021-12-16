@@ -57,9 +57,12 @@ export default ({
     }
   }
 
-  function genTree(origin: Perm[] = [], pNode?: PermOpt): CascaderProps<PermOpt>['options'] {
-    let matched: PermOpt[] = [],
-      mismatched: PermOpt[] = [];
+  function genTree(
+    origin: Perm[] = [],
+    pNode?: PermOpt,
+  ): { matched: PermOpt[]; mismatched: PermOpt[] } {
+    let _matched: PermOpt[] = [],
+      _mismatched: PermOpt[] = [];
 
     for (const p of origin) {
       let opt: PermOpt = {
@@ -69,15 +72,24 @@ export default ({
         genealogy: (pNode?.genealogy ?? []).concat(p.id),
       };
       if (p.pID === pNode?.id) {
-        matched.push(opt);
+        _matched.push(opt);
       } else {
-        mismatched.push(opt);
+        _mismatched.push(opt);
       }
     }
-    return matched.map((match) => ({
-      ...match,
-      children: genTree(mismatched, match),
-    }));
+
+    let solution: PermOpt[] = [];
+
+    for (const match of _matched) {
+      let { matched, mismatched } = genTree(_mismatched, match);
+      solution.push({ ...match, children: matched });
+      _mismatched = mismatched;
+    }
+
+    return {
+      matched: solution,
+      mismatched: _mismatched,
+    };
   }
 
   return (
@@ -105,7 +117,7 @@ export default ({
         {({ getFieldValue }) => {
           const id = getFieldValue(['id']),
             validOpt = dfsMap<Partial<PermOpt>>(
-              { children: genTree(perms?.data?.data ?? []) },
+              { children: genTree(perms?.data?.data ?? []).matched },
               'children',
               (t) =>
                 t?.genealogy?.includes(id)
