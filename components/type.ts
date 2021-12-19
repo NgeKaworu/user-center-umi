@@ -23,7 +23,7 @@ export type ValueType =
 export type ValueEnumKey = string | number;
 export type ValueEnumValue = string | number | ReactNode;
 
-export type ValueEnum = Map<ValueEnumKey, ValueEnumValue> | Record<ValueEnumKey, ValueEnumValue>;
+export type ValueEnum = Map<any, ValueEnumValue> | Record<ValueEnumKey, ValueEnumValue>;
 
 export function getValueEnumValue(valueEnum: ValueEnum, key: ValueEnumKey): ValueEnumValue {
   if (valueEnum instanceof Map) {
