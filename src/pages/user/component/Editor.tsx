@@ -1,16 +1,18 @@
-import { Form, TreeSelect, Input } from 'antd';
+import { Form, Input } from 'antd';
 
 import ModalForm from '@/js-sdk/components/ModalForm';
 import type useModalForm from '@/js-sdk/components/ModalForm/useModalForm';
 
 import { list } from '../../role/api';
-import { update, create, validateKey } from '../api';
+import { update, create } from '../api';
 import { useQuery } from 'react-query';
 
 import SearchSelect from '@/js-sdk/components/SearchSelect';
 import { compose } from '@/js-sdk/decorators/utils';
 import { IOC } from '@/js-sdk/decorators/hoc';
 import SelectAll from '@/js-sdk/decorators/Select/SelectAll';
+
+import { Email, Name, Pwd } from './Field';
 
 const { Item } = Form;
 
@@ -57,28 +59,11 @@ export default ({
       <Item name="id" hidden>
         <input disabled />
       </Item>
-      <Item name="name" label="用户名" rules={[{ required: true }]}>
-        <Input placeholder="请输入" />
-      </Item>
-      <Item
-        name="email"
-        label="邮箱"
-        rules={[
-          { required: true },
-          {
-            validator: (_, email) =>
-              inEdit || !email
-                ? Promise.resolve()
-                : validateKey({ params: { email }, notify: false }),
-          },
-          { type: 'email' },
-        ]}
-      >
-        <Input placeholder="请输入" disabled={inEdit} />
-      </Item>
-      <Item name="pwd" label="密码" rules={[{ required: !inEdit }, { type: 'string', min: 8 }]}>
-        <Input.Password placeholder="请输入" />
-      </Item>
+
+      <Name />
+      <Email disabled={inEdit} checkout={!inEdit} />
+      <Pwd disabled={inEdit} />
+
       <Item name="roles" label="拥有权限">
         {compose<any>(IOC([SelectAll]))(<SearchSelect allowClear options={rolesOpt} />)}
       </Item>
