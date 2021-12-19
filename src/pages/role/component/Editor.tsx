@@ -60,7 +60,11 @@ export default ({
           { required: true },
           {
             validator: (_, id) =>
-              inEdit ? Promise.resolve() : validateKey({ params: { id }, notify: false }),
+              inEdit || !id ? Promise.resolve() : validateKey({ params: { id }, notify: false }),
+          },
+          {
+            pattern: /^[\w-]*$/,
+            message: '仅允许英文、数字和“-”',
           },
         ]}
       >
@@ -78,6 +82,7 @@ export default ({
           multiple
           treeCheckable
           showCheckedStrategy="SHOW_ALL"
+          allowClear
         />
       </Item>
     </ModalForm>

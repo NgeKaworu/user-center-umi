@@ -1,15 +1,18 @@
-import { Form, Input, Tooltip, TreeSelect } from 'antd';
+import { Form, Input, Tooltip, TreeSelect, Radio, message } from 'antd';
 
 import ModalForm from '@/js-sdk/components/ModalForm';
 import type useModalForm from '@/js-sdk/components/ModalForm/useModalForm';
 
 import { update, create, list, validateKey } from '../api';
 import { useQuery } from 'react-query';
-import { dfsMap } from '@/js-sdk/utils/dfs';
+import { dfsMap } from '@/js-sdk/struct/tree/dfs';
 import perm2Tree, { PermOpt } from '../util/perm2Tree';
 import permFilter from '../util/permFilter';
+import { MENU_TYPE_MAP } from '../model/constant';
+import Options from '@/js-sdk/utils/Options';
 
 const { Item } = Form;
+const { Group: RGroup } = Radio;
 
 export default ({
   formProps,
@@ -21,8 +24,8 @@ export default ({
   onSuccess?: (...args: any) => void;
 }) => {
   const inEdit = modalProps?.title === '编辑';
-  const perms = useQuery(['user-center/perm/list', 'infinity'], () =>
-    list({ params: { limit: 0 } }),
+  const perms = useQuery(['user-center/perm/list', 'menu', 'infinity'], () =>
+    list({ params: { limit: 0, isMenu: true } }),
   );
 
   async function onSubmit() {
@@ -36,8 +39,7 @@ export default ({
         api = create;
       }
 
-      await api(value);
-      await onSuccess?.();
+      await onSuccess?.(await api(value));
       setModalProps((pre) => ({ ...pre, visible: false }));
       perms.refetch();
       form.resetFields();
@@ -48,7 +50,11 @@ export default ({
 
   return (
     <ModalForm
-      formProps={{ onFinish: onSubmit, ...formProps }}
+      formProps={{
+        onFinish: onSubmit,
+        initialValues: { isMenu: true, isHide: false },
+        ...formProps,
+      }}
       modalProps={{ onOk: onSubmit, ...modalProps }}
     >
       <Item name="name" label="权限名" rules={[{ required: true }]}>
@@ -61,45 +67,85 @@ export default ({
           { required: true },
           {
             validator: (_, id) =>
-              inEdit ? Promise.resolve() : validateKey({ params: { id }, notify: false }),
+              inEdit || !id ? Promise.resolve() : validateKey({ params: { id }, notify: false }),
+          },
+          {
+            pattern: /^[\w-]*$/,
+            message: '仅允许英文、数字和“-”',
           },
         ]}
       >
         <Input placeholder="请输入" disabled={inEdit} />
       </Item>
-      <Item dependencies={['id']} noStyle>
-        {({ getFieldValue }) => {
-          const id = getFieldValue(['id']),
-            validOpt = dfsMap<Partial<PermOpt>>(
-              { children: perm2Tree(perms?.data?.data) },
-              'children',
-              (t) =>
-                t?.genealogy?.includes(id)
-                  ? {
-                      ...t,
-                      disabled: true,
-                      name: <Tooltip title="不能选子孙节点">{t.label}</Tooltip>,
-                    }
-                  : t,
-            ).children;
 
-          return (
-            <Item name="pID" label="父级id">
-              <TreeSelect
-                treeDefaultExpandAll
-                placeholder="请选择"
-                treeNodeLabelProp="name"
-                treeLine
-                treeData={validOpt}
-                showSearch
-                filterTreeNode={permFilter}
-              />
-            </Item>
-          );
-        }}
+      <Item
+        name="isMenu"
+        label="是否当作菜单使用？"
+        tooltip="菜单模式可以配置层级关系"
+        rules={[{ required: true }]}
+      >
+        <RGroup optionType="button" options={Options(MENU_TYPE_MAP).toOpt} disabled={inEdit} />
       </Item>
-      <Item name="url" label="url">
-        <Input placeholder="请输入" />
+
+      <Item dependencies={[['isMenu']]} noStyle>
+        {({ getFieldValue }) =>
+          getFieldValue(['isMenu']) && (
+            <>
+              <Item dependencies={['id']} noStyle>
+                {() => {
+                  const id = getFieldValue(['id']),
+                    validOpt = dfsMap<Partial<PermOpt>>(
+                      { children: perm2Tree(perms?.data?.data) },
+                      'children',
+                      (t) => {
+                        const ouroboros = t?.genealogy?.includes(id);
+                        return {
+                          ...t,
+                          disabled: ouroboros,
+                          label: (
+                            <Tooltip title={ouroboros ? '不能选子孙节点' : t.url}>
+                              {t.label}
+                            </Tooltip>
+                          ),
+                        };
+                      },
+                    ).children;
+
+                  return (
+                    <Item name="pID" label="上级菜单">
+                      <TreeSelect
+                        treeDefaultExpandAll
+                        placeholder="请选择"
+                        treeNodeLabelProp="name"
+                        treeLine
+                        treeData={validOpt}
+                        showSearch
+                        filterTreeNode={permFilter}
+                        allowClear
+                      />
+                    </Item>
+                  );
+                }}
+              </Item>
+
+              <Item
+                name="url"
+                label="路由"
+                rules={[{ required: true }, { type: getFieldValue(['pID']) ? 'string' : 'url' }]}
+              >
+                <Input placeholder="请输入" />
+              </Item>
+
+              <Item
+                name="isHide"
+                label="是否在菜单中隐藏"
+                tooltip="开起隐藏后将不在菜单中渲染，但依旧可以通过url访问"
+              >
+                <RGroup optionType="button" options={Options(MENU_TYPE_MAP).toOpt} />
+              </Item>
+            </>
+          )
+        }
       </Item>
     </ModalForm>
   );

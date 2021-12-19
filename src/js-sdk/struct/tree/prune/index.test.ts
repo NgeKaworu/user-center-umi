@@ -1,5 +1,5 @@
-import isValidValue from '../../utils/isValidValue';
-import prune from './';
+import isValidValue from '../../../utils/isValidValue';
+import prune from '.';
 
 describe('prune test', () => {
   it('[] === undefined', () => {

@@ -20,7 +20,13 @@ export default () => {
   const editor = useModalForm();
 
   const columns: LightTableProColumnProps<Role & { keyword?: string }>[] = [
-    { dataIndex: 'id', title: 'id', hideInSearch: true, copyable: true },
+    {
+      dataIndex: 'id',
+      title: 'id',
+      hideInSearch: true,
+      copyable: true,
+    },
+
     { dataIndex: 'keyword', title: '关键字', hideInTable: true },
     { dataIndex: 'name', title: '角色名', hideInSearch: true },
     {

@@ -8,7 +8,7 @@ export interface PermOpt extends Perm {
   genealogy?: Perm['id'][];
 }
 
-function _perm2Tree(
+export function _perm2Tree(
   origin: Perm[],
   pNode?: PermOpt,
 ): { matched: PermOpt[]; mismatched: PermOpt[] } {
