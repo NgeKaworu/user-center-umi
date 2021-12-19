@@ -102,10 +102,8 @@ export default ({
                         return {
                           ...t,
                           disabled: ouroboros,
-                          label: (
-                            <Tooltip title={ouroboros ? '不能选子孙节点' : t.url}>
-                              {t.label}
-                            </Tooltip>
+                          name: (
+                            <Tooltip title={ouroboros ? '不能选子孙节点' : t.url}>{t.name}</Tooltip>
                           ),
                         };
                       },
@@ -114,6 +112,7 @@ export default ({
                   return (
                     <Item name="pID" label="上级菜单">
                       <TreeSelect
+                        fieldNames={{ label: 'name' }}
                         treeDefaultExpandAll
                         placeholder="请选择"
                         treeNodeLabelProp="name"

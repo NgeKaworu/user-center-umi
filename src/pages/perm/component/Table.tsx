@@ -4,14 +4,16 @@ import Perm from '@/model/Perm';
 import { list, deleteOne } from '../api';
 import Editor from './Editor';
 import useModalForm from '@/js-sdk/components/ModalForm/useModalForm';
-import { Button, Space, Typography, Popconfirm, Form, Card } from 'antd';
+import { Button, Space, Typography, Popconfirm, Form, Card, FormProps } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { MENU_TYPE_MAP } from '../model/constant';
 import { useQuery } from 'react-query';
 import LightTable from '@/js-sdk/components/LightTable';
 import style from '@/js-sdk/components/LightTablePro/index.less';
 import Search from '@/js-sdk/components/Search';
-import perm2Tree from '../util/perm2Tree';
+import perm2Tree, { PermOpt } from '../util/perm2Tree';
+import dfs from '@/js-sdk/struct/tree/dfs';
+import { ignoreCaseIncludes } from '@/js-sdk/struct/string/util';
 const { Link } = Typography;
 
 export default () => {
@@ -46,7 +48,13 @@ export default () => {
       copyable: true,
       width: 150,
     },
-    { dataIndex: 'keyword', title: '关键字', hideInTable: true },
+    {
+      dataIndex: 'keyword',
+      title: '关键字',
+      hideInTable: true,
+      fieldProps: { placeholder: '支持ID、名字、路由模糊搜索' },
+      tooltip: '支持ID、名字、路由模糊搜索',
+    },
     { dataIndex: 'isMenu', title: '是否菜单', valueEnum: MENU_TYPE_MAP, width: 100 },
     { dataIndex: 'name', title: '权限名', hideInSearch: true, width: 150 },
     {
@@ -133,6 +141,25 @@ export default () => {
     setKeyword(void 0);
   }
 
+  const onFinish: FormProps<Perm & { keyword?: string }>['onFinish'] = (value) => {
+    setKeyword(value);
+    const { keyword } = value;
+    if (keyword != void 0) {
+      let matched: Key[] = [];
+      dfs<Partial<PermOpt> & { children: PermOpt[] }>({ children: dataSource }, 'children', (t) => {
+        if (
+          (t?.url && ignoreCaseIncludes(t.url, keyword)) ||
+          (t?.name && ignoreCaseIncludes(t.name?.toString(), keyword)) ||
+          (t?.id && ignoreCaseIncludes(t.id, keyword))
+        ) {
+          matched = matched.concat(t?.genealogy as Key[]);
+        }
+        return false;
+      });
+      onExpandedRowsChange(matched);
+    }
+  };
+
   return (
     <>
       <Editor {...editor} onSuccess={editSuccess} />
@@ -140,7 +167,7 @@ export default () => {
       <div className={`${style.flex} ${style.column}`}>
         <Search
           columns={columns}
-          formProps={{ form, onFinish: setKeyword, onReset: resetAndReload }}
+          formProps={{ form, onFinish: onFinish, onReset: resetAndReload }}
         />
 
         <Card>
@@ -165,7 +192,7 @@ export default () => {
               bordered
               loading={perms.isFetching}
               expandable={{ onExpandedRowsChange, expandedRowKeys }}
-              dataSource={dataSource?.length ? dataSource : perms.data?.data}
+              dataSource={dataSource}
               pagination={false}
             />
           </div>
