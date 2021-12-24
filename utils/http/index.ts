@@ -93,7 +93,7 @@ restful.interceptors.request.use(function (options) {
     ...options,
     headers: {
       ...options?.headers,
-      Authorization: `${localStorage.getItem('token')}`,
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
     },
   };
 });

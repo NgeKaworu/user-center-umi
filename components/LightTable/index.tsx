@@ -11,7 +11,7 @@ import { Typography } from 'antd';
 import { getValueEnumValue } from '../type';
 import { _valueTypeRegister } from './valueTypeRegister';
 import prune from '../../struct/tree/prune';
-import trimEndWith from '../../utils/trimEndWith';
+import trimEndWith from '../../struct/string/trimEndWith';
 import isValidValue from '../../utils/isValidValue';
 import React from 'react';
 
