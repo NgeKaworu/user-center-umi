@@ -204,10 +204,12 @@ export default () => {
       <Editor {...editor} onSuccess={editSuccess} />
 
       <div className={`${style.flex} ${style.column}`}>
-        <Search
-          columns={columns}
-          formProps={{ form, onFinish: onFinish, onReset: resetAndReload }}
-        />
+        <Card>
+          <Search
+            columns={columns}
+            formProps={{ form, onFinish: onFinish, onReset: resetAndReload }}
+          />
+        </Card>
 
         <Card>
           <div className={`${style.flex} ${style.column}`}>

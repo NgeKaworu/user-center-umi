@@ -1,7 +1,7 @@
 import { Form, Input, Tooltip, TreeSelect, Radio } from 'antd';
 import * as icons from '@ant-design/icons';
 
-import React, { createElement, isValidElement, ReactElement, ReactNode } from 'react';
+import { createElement, isValidElement, ReactNode } from 'react';
 import ModalForm from '@/js-sdk/components/ModalForm';
 import type useModalForm from '@/js-sdk/components/ModalForm/useModalForm';
 

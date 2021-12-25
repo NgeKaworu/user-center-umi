@@ -1,8 +1,10 @@
 import { useParams, useHistory } from 'react-router-dom';
-import { Button, Form, FormProps, Typography } from 'antd';
+import { Button, Form, Card, FormProps, Typography } from 'antd';
 import { ConfirmPwd, Email, Name, Pwd } from './user/component/Field';
 import { restful } from '@/js-sdk/utils/http';
 import { useMutation } from 'react-query';
+import styles from './profile.less';
+
 const { Item } = Form;
 const { Link } = Typography;
 
@@ -41,20 +43,24 @@ export default () => {
   };
 
   return (
-    <Form form={form} layout="vertical" onFinish={onFinish}>
-      {entry === 'register' && <Name />}
-      <Email checkout={entry === 'register'} />
-      <Pwd />
-      {entry === 'register' && <ConfirmPwd />}
-      <Item noStyle>
-        <Button htmlType="submit" type="primary" ghost block loading={charon.isLoading}>
-          {ENTRY_MAP.get(entry)}
-        </Button>
-      </Item>
+    <div className={styles.content}>
+      <Card title="Welcome" style={{ height: 720, width: 405 }}>
+        <Form form={form} layout="vertical" onFinish={onFinish}>
+          {entry === 'register' && <Name />}
+          <Email checkout={entry === 'register'} />
+          <Pwd />
+          {entry === 'register' && <ConfirmPwd />}
+          <Item noStyle>
+            <Button htmlType="submit" type="primary" ghost block loading={charon.isLoading}>
+              {ENTRY_MAP.get(entry)}
+            </Button>
+          </Item>
 
-      <Item>
-        <Link onClick={switchEntry}>{ENTRY_SUB_MAP.get(entry)}</Link>
-      </Item>
-    </Form>
+          <Item>
+            <Link onClick={switchEntry}>{ENTRY_SUB_MAP.get(entry)}</Link>
+          </Item>
+        </Form>
+      </Card>
+    </div>
   );
 };
