@@ -1,7 +1,7 @@
 import { Form, Input, Tooltip, TreeSelect, Radio } from 'antd';
 import * as icons from '@ant-design/icons';
 
-import { createElement } from 'react';
+import React, { createElement, ReactNode } from 'react';
 import ModalForm from '@/js-sdk/components/ModalForm';
 import type useModalForm from '@/js-sdk/components/ModalForm/useModalForm';
 
@@ -16,6 +16,8 @@ import SearchSelect from '@/js-sdk/components/SearchSelect';
 
 const { Item } = Form;
 const { Group: RGroup } = Radio;
+const firstLetter = (s: string) => s[0];
+const isUpperCase = (s: string) => s === s.toUpperCase();
 
 export default ({
   formProps,
@@ -30,10 +32,16 @@ export default ({
   const perms = useQuery(['user-center/perm/list', 'menu', 'infinity'], () =>
     list({ params: { limit: 0, isMenu: true } }),
   );
-  const iconOpt = Object.keys(icons).map((k) => ({
-    value: k,
-    label: createElement((icons as any)?.[k]),
-  }));
+  const iconOpt = Object.keys(icons).reduce(
+    (acc: { value: string; label: ReactNode }[], k) =>
+      isUpperCase(firstLetter(k)) && k !== 'IconProvider'
+        ? acc.concat({
+            value: k,
+            label: createElement((icons as any)?.[k]),
+          })
+        : acc,
+    [],
+  );
 
   async function onSubmit() {
     const value = await form?.validateFields();
