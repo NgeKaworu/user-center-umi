@@ -1,4 +1,4 @@
-import reverseSplitJoin from '../../utils/reverseSplitJoin';
+import reverseSplitJoin from '../../struct/string/reverseSplitJoin';
 import type { TableColumnProps } from 'antd';
 import moment from 'moment';
 import type { ValueType } from '../type';

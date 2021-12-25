@@ -93,7 +93,7 @@ restful.interceptors.request.use(function (options) {
     ...options,
     headers: {
       ...options?.headers,
-      Authorization: `${localStorage.getItem('token')}`,
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
     },
   };
 });
@@ -136,10 +136,13 @@ restful.interceptors.response.use(undefined, (error: CustomError) => {
     return reAuth
       ? reAuthorization(config)
       : message.warning({
+          key: response.status,
           content: '请先登录',
           onClose: () => {
             localStorage.clear();
-            location.replace(`/user-center/login/`);
+            if (!location.pathname?.toLocaleLowerCase()?.includes('/user-center/login/')) {
+              location.replace(`/user-center/login/`);
+            }
           },
         });
   }

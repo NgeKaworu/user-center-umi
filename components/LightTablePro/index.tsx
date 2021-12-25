@@ -95,13 +95,15 @@ export default function LightTablePro<RecordType extends Record<any, any> = any>
 
   return (
     <div className={`${styles.flex} ${styles.column}`}>
-      <Search
-        columns={columns}
-        formProps={{
-          ...formHandler,
-          ...formProps,
-        }}
-      />
+      <Card>
+        <Search
+          columns={columns}
+          formProps={{
+            ...formHandler,
+            ...formProps,
+          }}
+        />
+      </Card>
       {children}
       <Card>
         <div className={`${styles.flex} ${styles.column}`}>
