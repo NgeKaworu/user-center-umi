@@ -11,7 +11,7 @@ export default () => {
   const profile = useQuery<{ data: User }>(['profile'], () => restful.get('user-center/profile'));
   const logout = () => {
     localStorage.clear();
-    location.reload();
+    location.replace('/user-center/login/');
   };
 
   return (

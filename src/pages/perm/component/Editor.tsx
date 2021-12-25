@@ -1,4 +1,4 @@
-import { Form, Input, Tooltip, TreeSelect, Radio } from 'antd';
+import { Form, Input, Tooltip, TreeSelect, Radio, InputNumber } from 'antd';
 import * as icons from '@ant-design/icons';
 
 import { createElement, isValidElement, ReactNode } from 'react';
@@ -93,6 +93,10 @@ export default ({
         <Input placeholder="请输入" disabled={inEdit} />
       </Item>
 
+      <Item name="order" label="序号">
+        <InputNumber placeholder="请输入" precision={0} />
+      </Item>
+
       <Item
         name="isMenu"
         label="是否当作菜单使用？"
@@ -142,7 +146,7 @@ export default ({
                         treeDefaultExpandAll
                         placeholder="请选择"
                         treeNodeLabelProp="name"
-                        treeLine
+                        treeLine={{ showLeafIcon: false }}
                         treeData={validOpt}
                         showSearch
                         filterTreeNode={permFilter}

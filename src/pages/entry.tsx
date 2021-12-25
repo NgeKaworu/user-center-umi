@@ -38,7 +38,7 @@ export default () => {
     try {
       const res = await charon.mutateAsync(value);
       window.localStorage.setItem('token', res?.data);
-      history.push('/');
+      location.replace('/');
     } catch {}
   };
 

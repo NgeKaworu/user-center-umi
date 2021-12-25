@@ -39,7 +39,10 @@ export default () => {
         node
           ? cloneElement(node, {
               children: node?.props?.children?.map(
-                (pid: Perm['id']) => `${perms?.data?.data?.find(({ id }) => id === pid)?.name}、`,
+                (pid: Perm['id'], idx: number, arr: any[]) =>
+                  `${perms?.data?.data?.find(({ id }) => id === pid)?.name}${
+                    idx !== arr?.length - 1 ? '、' : ''
+                  }`,
               ),
             })
           : null,

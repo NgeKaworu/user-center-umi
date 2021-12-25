@@ -10,7 +10,9 @@ export const deleteOne = (id: string, ...args: Tail<Parameters<typeof restful.de
 export const update = (...args: Tail<Parameters<typeof restful.put>>) =>
   restful.put('user-center/perm/update', ...args);
 export const list = (...args: Tail<Parameters<typeof restful.get>>) =>
-  restful.get<Res<Perm[]>, Res<Perm[]>>('user-center/perm/list', ...args);
+  restful
+    .get<Res<Perm[]>, Res<Perm[]>>('user-center/perm/list', ...args)
+    .then((res) => ({ data: res.data?.sort((a, b) => (a.order ?? 0) - (b.order ?? 0)) }));
 
 export const validateKey = (...args: Tail<Parameters<typeof restful.get>>) =>
   restful.get<Res<Perm[]>, Res<Perm[]>>(`user-center/perm/validate`, ...args);
