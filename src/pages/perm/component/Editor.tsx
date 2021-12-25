@@ -1,5 +1,7 @@
-import { Form, Input, Tooltip, TreeSelect, Radio, message } from 'antd';
+import { Form, Input, Tooltip, TreeSelect, Radio } from 'antd';
+import * as icons from '@ant-design/icons';
 
+import { createElement } from 'react';
 import ModalForm from '@/js-sdk/components/ModalForm';
 import type useModalForm from '@/js-sdk/components/ModalForm/useModalForm';
 
@@ -10,6 +12,7 @@ import perm2Tree, { PermOpt } from '../util/perm2Tree';
 import permFilter from '../util/permFilter';
 import { MENU_TYPE_MAP } from '../model/constant';
 import Options from '@/js-sdk/utils/Options';
+import SearchSelect from '@/js-sdk/components/SearchSelect';
 
 const { Item } = Form;
 const { Group: RGroup } = Radio;
@@ -27,6 +30,10 @@ export default ({
   const perms = useQuery(['user-center/perm/list', 'menu', 'infinity'], () =>
     list({ params: { limit: 0, isMenu: true } }),
   );
+  const iconOpt = Object.keys(icons).map((k) => ({
+    value: k,
+    label: createElement((icons as any)?.[k]),
+  }));
 
   async function onSubmit() {
     const value = await form?.validateFields();
@@ -99,6 +106,9 @@ export default ({
         {({ getFieldValue }) =>
           getFieldValue(['isMenu']) && (
             <>
+              <Item name="icon" label="icon">
+                <SearchSelect options={iconOpt} allowClear />
+              </Item>
               <Item dependencies={['id']} noStyle>
                 {() => {
                   const id = getFieldValue(['id']),

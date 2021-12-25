@@ -13,4 +13,5 @@ export default interface Perm {
   isMicroApp?: boolean; // 是否微应用入口
   pID?: string; // 父级id
   url?: string; // url
+  icon?: string; // icon
 }

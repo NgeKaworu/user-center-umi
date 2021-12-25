@@ -1,4 +1,4 @@
-import { useState, Key } from 'react';
+import { useState, Key, createElement } from 'react';
 import { LightTableProColumnProps } from '@/js-sdk/components/LightTablePro';
 import Perm from '@/model/Perm';
 import { list, deleteOne } from '../api';
@@ -14,6 +14,8 @@ import Search from '@/js-sdk/components/Search';
 import perm2Tree, { PermOpt } from '../util/perm2Tree';
 import dfs from '@/js-sdk/struct/tree/dfs';
 import { ignoreCaseIncludes } from '@/js-sdk/struct/string/util';
+import * as icons from '@ant-design/icons';
+
 const { Link } = Typography;
 
 export default () => {
@@ -56,6 +58,13 @@ export default () => {
       tooltip: '支持ID、名字、路由模糊搜索',
     },
     { dataIndex: 'isMenu', title: '是否菜单', valueEnum: MENU_TYPE_MAP, width: 100 },
+    {
+      dataIndex: 'icon',
+      title: 'icon',
+      width: 50,
+      align: 'center',
+      render: (text) => (text ? createElement((icons as any)[text]) : void 0),
+    },
     { dataIndex: 'name', title: '权限名', hideInSearch: true, width: 150 },
     {
       dataIndex: 'pID',
