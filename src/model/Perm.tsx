@@ -10,6 +10,7 @@ export default interface Perm {
   // menu
   isMenu: boolean; // 是否菜单
   isHide?: boolean; // 是否不在菜单中显视
+  isMicroApp?: boolean; // 是否微应用入口
   pID?: string; // 父级id
   url?: string; // url
 }

@@ -86,8 +86,16 @@ export default ({
       >
         <RGroup optionType="button" options={Options(MENU_TYPE_MAP).toOpt} disabled={inEdit} />
       </Item>
+      <Item
+        name="isMicroApp"
+        label="是否当作微应用入口？"
+        tooltip="微应用的路由必须是个有效Url"
+        rules={[{ required: true }]}
+      >
+        <RGroup optionType="button" options={Options(MENU_TYPE_MAP).toOpt} />
+      </Item>
 
-      <Item dependencies={[['isMenu']]} noStyle>
+      <Item dependencies={[['isMenu'], ['isMicroApp']]} noStyle>
         {({ getFieldValue }) =>
           getFieldValue(['isMenu']) && (
             <>
@@ -130,7 +138,13 @@ export default ({
               <Item
                 name="url"
                 label="路由"
-                rules={[{ required: true }, { type: getFieldValue(['pID']) ? 'string' : 'url' }]}
+                rules={[
+                  { required: true },
+                  {
+                    type:
+                      getFieldValue(['pID']) && !getFieldValue(['isMicroApp']) ? 'string' : 'url',
+                  },
+                ]}
               >
                 <Input placeholder="请输入" />
               </Item>

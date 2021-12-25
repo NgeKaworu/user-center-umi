@@ -1,32 +1,15 @@
 import { defineConfig } from 'umi';
 import theme from './src/theme';
 import routes from './routes';
+import base from './src/js-sdk/configs/.umirc.default';
 
 export default defineConfig({
+  ...base,
   theme,
   title: '用户中心',
-  qiankun: {
-    slave: {},
-  },
-  fastRefresh: {},
-  nodeModulesTransform: {
-    type: 'none',
-  },
+  base: '/user-center',
+  publicPath: '/user-center/',
   routes,
-
-  helmet: false,
-  dva: false,
-  model: false,
-  initialState: false,
-  layout: false,
-  locale: false,
-  preact: false,
-  request: false,
-  sass: false,
-  hash: true,
-  base: '/micro/user-center',
-  publicPath: '/micro/user-center/',
-  runtimePublicPath: true,
   devServer: {
     port: 80,
     proxy: {
@@ -40,10 +23,6 @@ export default defineConfig({
       },
     },
   },
-  externals: {
-    moment: 'moment',
-  },
-  scripts: ['https://lib.baomitu.com/moment.js/latest/moment.min.js'],
   extraBabelPlugins: [
     [
       'babel-plugin-styled-components',
