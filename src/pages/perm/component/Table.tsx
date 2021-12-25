@@ -1,10 +1,10 @@
 import { useState, Key, createElement } from 'react';
 import { LightTableProColumnProps } from '@/js-sdk/components/LightTablePro';
 import Perm from '@/model/Perm';
-import { list, deleteOne } from '../api';
+import { list, deleteOne, update } from '../api';
 import Editor from './Editor';
 import useModalForm from '@/js-sdk/components/ModalForm/useModalForm';
-import { Button, Space, Typography, Popconfirm, Form, Card, FormProps } from 'antd';
+import { Button, Space, Typography, Popconfirm, Form, Card, FormProps, Switch } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { MENU_TYPE_MAP } from '../model/constant';
 import { useQuery } from 'react-query';
@@ -41,6 +41,16 @@ export default () => {
 
   const editor = useModalForm();
   const [form] = Form.useForm();
+  function switchHandler(p: Perm) {
+    return async () => {
+      try {
+        await update({ ...p, isHide: !p.isHide });
+        perms.refetch();
+      } catch (e) {
+        console.warn(e);
+      }
+    };
+  }
 
   const columns: LightTableProColumnProps<Perm & { keyword?: string }>[] = [
     {
@@ -48,7 +58,9 @@ export default () => {
       title: 'id',
       hideInSearch: true,
       copyable: true,
-      width: 150,
+      width: 200,
+      fixed: 'left',
+      ellipsis: { padding: 17 },
     },
     {
       dataIndex: 'keyword',
@@ -57,10 +69,26 @@ export default () => {
       fieldProps: { placeholder: '支持ID、名字、路由模糊搜索' },
       tooltip: '支持ID、名字、路由模糊搜索',
     },
-    { dataIndex: 'isMenu', title: '是否菜单', valueEnum: MENU_TYPE_MAP, width: 100 },
+    { dataIndex: 'isMenu', title: '是否菜单', valueEnum: MENU_TYPE_MAP, width: 75, fixed: 'left' },
+    {
+      dataIndex: 'isHide',
+      title: '是否隐藏',
+      hideInSearch: true,
+      width: 75,
+      fixed: 'left',
+      render: (v, record) => (
+        <Popconfirm
+          title={!v ? '隐藏后将在菜单中不可见，路由依旧生效' : '开启后将在菜单中可见'}
+          onConfirm={switchHandler(record)}
+        >
+          <Switch checked={v} />
+        </Popconfirm>
+      ),
+    },
     {
       dataIndex: 'icon',
       title: 'icon',
+      hideInSearch: true,
       width: 50,
       align: 'center',
       render: (text) => (text ? createElement((icons as any)[text]) : void 0),
@@ -128,7 +156,7 @@ export default () => {
   function addSubMenu(row: Perm) {
     return () => {
       editor.setModalProps((pre) => ({ ...pre, visible: true, title: '新增' }));
-      editor.form.setFieldsValue({ pID: row.id });
+      editor.form.setFieldsValue({ pID: row.id, url: row.url });
       onExpandedRowsChange((pre) => pre.concat(row.id));
     };
   }
@@ -138,7 +166,9 @@ export default () => {
       try {
         await deleteOne(row.id, { notify: true });
         perms.refetch();
-      } catch {}
+      } catch (e) {
+        console.warn(e);
+      }
     };
   }
 

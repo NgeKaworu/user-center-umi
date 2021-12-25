@@ -1,7 +1,7 @@
 import { Form, Input, Tooltip, TreeSelect, Radio } from 'antd';
 import * as icons from '@ant-design/icons';
 
-import React, { createElement, ReactNode } from 'react';
+import React, { createElement, isValidElement, ReactElement, ReactNode } from 'react';
 import ModalForm from '@/js-sdk/components/ModalForm';
 import type useModalForm from '@/js-sdk/components/ModalForm/useModalForm';
 
@@ -101,19 +101,19 @@ export default ({
       >
         <RGroup optionType="button" options={Options(MENU_TYPE_MAP).toOpt} disabled={inEdit} />
       </Item>
-      <Item
-        name="isMicroApp"
-        label="是否当作微应用入口？"
-        tooltip="微应用的路由必须是个有效Url"
-        rules={[{ required: true }]}
-      >
-        <RGroup optionType="button" options={Options(MENU_TYPE_MAP).toOpt} />
-      </Item>
 
       <Item dependencies={[['isMenu'], ['isMicroApp']]} noStyle>
-        {({ getFieldValue }) =>
+        {({ getFieldValue, setFieldsValue }) =>
           getFieldValue(['isMenu']) && (
             <>
+              <Item
+                name="isMicroApp"
+                label="是否当作微应用入口？"
+                tooltip="微应用的路由必须是个有效Url"
+                rules={[{ required: true }]}
+              >
+                <RGroup optionType="button" options={Options(MENU_TYPE_MAP).toOpt} />
+              </Item>
               <Item name="icon" label="icon">
                 <SearchSelect options={iconOpt} allowClear />
               </Item>
@@ -147,6 +147,11 @@ export default ({
                         showSearch
                         filterTreeNode={permFilter}
                         allowClear
+                        onChange={(_, label) =>
+                          setFieldsValue({
+                            url: isValidElement(label?.[0]) ? label?.[0]?.props?.title : void 0,
+                          })
+                        }
                       />
                     </Item>
                   );
