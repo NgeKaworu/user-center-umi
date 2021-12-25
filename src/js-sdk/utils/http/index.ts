@@ -139,7 +139,9 @@ restful.interceptors.response.use(undefined, (error: CustomError) => {
           content: '请先登录',
           onClose: () => {
             localStorage.clear();
-            location.replace(`/user-center/login/`);
+            if (!location.pathname?.toLocaleLowerCase()?.includes('/user-center/login/')) {
+              location.replace(`/user-center/login/`);
+            }
           },
         });
   }
