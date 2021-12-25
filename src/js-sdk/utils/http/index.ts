@@ -136,6 +136,7 @@ restful.interceptors.response.use(undefined, (error: CustomError) => {
     return reAuth
       ? reAuthorization(config)
       : message.warning({
+          key: response.status,
           content: '请先登录',
           onClose: () => {
             localStorage.clear();
