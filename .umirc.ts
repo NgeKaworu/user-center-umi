@@ -11,11 +11,10 @@ export default defineConfig({
   publicPath: '/micro/user-center/',
   routes,
   devServer: {
-    port: 80,
+    port: 8021,
     proxy: {
       '/api/user-center': {
-        // target: 'http://user-center-go-dev',
-        target: 'http://localhost:8088',
+        target: 'http://localhost:8020',
         changeOrigin: true,
         pathRewrite: {
           '/api/user-center': '',
