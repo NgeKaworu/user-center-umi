@@ -8,7 +8,7 @@ export default defineConfig({
   theme,
   title: '用户中心',
   base: '/user-center',
-  publicPath: '/user-center/',
+  publicPath: '/micro/user-center/',
   routes,
   devServer: {
     port: 80,
