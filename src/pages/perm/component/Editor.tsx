@@ -67,7 +67,7 @@ export default ({
     <ModalForm
       formProps={{
         onFinish: onSubmit,
-        initialValues: { isMenu: true, isHide: false },
+        initialValues: { isMenu: true, isHide: false, isMicroApp: false },
         ...formProps,
       }}
       modalProps={{ onOk: onSubmit, ...modalProps }}
@@ -162,17 +162,7 @@ export default ({
                 }}
               </Item>
 
-              <Item
-                name="url"
-                label="路由"
-                rules={[
-                  { required: true },
-                  {
-                    type:
-                      getFieldValue(['pID']) && !getFieldValue(['isMicroApp']) ? 'string' : 'url',
-                  },
-                ]}
-              >
+              <Item name="url" label="路由" rules={[{ required: true }]}>
                 <Input placeholder="请输入" />
               </Item>
 
