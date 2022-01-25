@@ -1,6 +1,11 @@
-import { Form, Input } from 'antd';
+import useCoolDown from '@/js-sdk/hooks/useCoolDown';
+import { MailOutlined, UserOutlined, RobotOutlined, LockOutlined } from '@ant-design/icons';
+import { Form, Input, Typography } from 'antd';
+import { FormInstance } from 'rc-field-form';
 import { validateKey } from '../api';
+import { fetchCaptcha, checkCaptcha } from '../api/captcha';
 const { Item } = Form;
+const { Link, Text } = Typography;
 
 export interface FieldProps {
   disabled?: boolean;
@@ -10,39 +15,100 @@ export interface FieldProps {
 export const Email = ({ disabled, checkout }: FieldProps) => (
   <Item
     name="email"
-    label="邮箱"
+    hasFeedback
     rules={[
-      { required: true },
+      { required: true, message: '请输入邮箱' },
       {
         validator: (_, email) =>
           checkout && email ? validateKey({ params: { email }, notify: false }) : Promise.resolve(),
       },
-      { type: 'email' },
+      { type: 'email', message: '请检查邮箱格式' },
     ]}
   >
-    <Input placeholder="请输入" disabled={disabled} />
+    <Input
+      prefix={<MailOutlined />}
+      placeholder="邮箱"
+      disabled={disabled}
+      allowClear
+      size="large"
+    />
   </Item>
 );
+
+export const Captcha = () => {
+  const { remaining, cooling, start } = useCoolDown({ count: 60, persistenceKey: 'captcha' });
+
+  function getCAPTCHA(form: FormInstance<any>) {
+    return async () => {
+      const { email } = await form.validateFields(['email']);
+      await fetchCaptcha({ params: { email }, notify: true });
+      start();
+    };
+  }
+
+  return (
+    <Item dependencies={[['email']]} noStyle>
+      {(form) => (
+        <Item
+          rules={[
+            { required: true, message: '请校验验证码' },
+            ({ getFieldValue }) => {
+              return {
+                validator: async (_, captcha) => {
+                  const email = await getFieldValue(['email']);
+
+                  if (!/^[0-9]{4}$/.test(captcha))
+                    return Promise.reject(new Error('请输入4位数验证码'));
+
+                  return await checkCaptcha({ params: { email, captcha }, notify: false });
+                },
+              };
+            },
+          ]}
+          name="captcha"
+          hasFeedback
+        >
+          <Input
+            prefix={<RobotOutlined />}
+            placeholder="验证码"
+            maxLength={4}
+            suffix={
+              cooling ? (
+                <Text type="secondary">{remaining}秒</Text>
+              ) : (
+                <Link onClick={getCAPTCHA(form)}>发送验证码</Link>
+              )
+            }
+            allowClear
+            size="large"
+          />
+        </Item>
+      )}
+    </Item>
+  );
+};
 
 export const Pwd = ({ disabled }: FieldProps) => (
   <Item
     name="pwd"
-    label="密码"
-    rules={[{ required: !disabled }, { type: 'string', min: 8 }]}
+    rules={[
+      { required: !disabled, message: '请输入密码' },
+      {
+        pattern: /^(?![0-9]+$)(?![A-Z]+$)(?![a-z]+$)[0-9A-Za-z]{8,}$/,
+        message: '密码8位字符以上，包含字母大小写和数字中两种和以上',
+      },
+    ]}
     hasFeedback
   >
-    <Input.Password placeholder="请输入" />
+    <Input.Password prefix={<LockOutlined />} placeholder="密码" allowClear size="large" />
   </Item>
 );
 
 export const ConfirmPwd = ({ pwdField = 'pwd' }: { pwdField?: string }) => (
   <Item
     name="confirmPwd"
-    label="确认密码"
     dependencies={[[pwdField]]}
     rules={[
-      { required: true },
-      { type: 'string', min: 8 },
       ({ getFieldValue }) => ({
         validator: (_, v) =>
           v === getFieldValue(pwdField)
@@ -52,12 +118,12 @@ export const ConfirmPwd = ({ pwdField = 'pwd' }: { pwdField?: string }) => (
     ]}
     hasFeedback
   >
-    <Input.Password placeholder="请输入" />
+    <Input.Password prefix={<LockOutlined />} placeholder="确认密码" allowClear size="large" />
   </Item>
 );
 
 export const Name = () => (
-  <Item name="name" label="用户名" rules={[{ required: true }]}>
-    <Input placeholder="请输入" />
+  <Item name="name" rules={[{ required: true, message: '请输入用户名' }]} hasFeedback>
+    <Input placeholder="用户名" allowClear size="large" prefix={<UserOutlined />} />
   </Item>
 );

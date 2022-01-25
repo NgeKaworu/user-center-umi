@@ -10,6 +10,7 @@ export default defineConfig({
   base: '/user-center',
   publicPath: '/micro/user-center/',
   routes,
+  webpack5: {},
   devServer: {
     port: 8021,
     proxy: {

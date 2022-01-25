@@ -1,6 +1,6 @@
 import { useParams, useHistory } from 'react-router-dom';
 import { Button, Form, Card, FormProps, Typography } from 'antd';
-import { ConfirmPwd, Email, Name, Pwd } from './user/component/Field';
+import { ConfirmPwd, Email, Name, Pwd, Captcha } from './user/component/Field';
 import { restful } from '@/js-sdk/utils/http';
 import { useMutation } from 'react-query';
 import styles from './profile.less';
@@ -8,30 +8,44 @@ import styles from './profile.less';
 const { Item } = Form;
 const { Link } = Typography;
 
-const ENTRY_MAP = new Map([
-  ['register', '注册'],
-  ['login', '登录'],
-]);
+interface Entry {
+  title: string;
+}
+type ENTRY_TYPE = 'register' | 'login' | 'forget-pwd';
 
-const ENTRY_SUB_MAP = new Map([
-  ['register', '已有账号？现在登录！'],
-  ['login', '没有账号？现在注册！'],
+const ENTRY_MAP = new Map<ENTRY_TYPE, Entry>([
+  [
+    'register',
+    {
+      title: '注册',
+    },
+  ],
+  [
+    'login',
+    {
+      title: '登录',
+    },
+  ],
+  [
+    'forget-pwd',
+    {
+      title: '重置密码',
+    },
+  ],
 ]);
-
-type Entry = 'register' | 'login';
 
 export default () => {
-  const { entry } = useParams() as { entry: Entry },
+  const { entry } = useParams() as { entry: ENTRY_TYPE },
     history = useHistory(),
     [form] = Form.useForm(),
     charon = useMutation((value) => restful.post(`user-center/${entry}`, value));
 
-  if (!['register', 'login'].includes(entry)) {
+  if (!['register', 'login', 'forget-pwd'].includes(entry)) {
     history.replace('/');
   }
 
-  function switchEntry() {
-    history.replace(`/${entry === 'login' ? 'register' : 'login'}`);
+  function go(pathname: ENTRY_TYPE) {
+    return () => history.replace(`/${pathname}`);
   }
 
   const onFinish: FormProps['onFinish'] = async (value) => {
@@ -39,25 +53,33 @@ export default () => {
       const res = await charon.mutateAsync(value);
       window.localStorage.setItem('token', res?.data);
       location.replace('/');
-    } catch {}
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
     <div className={styles.content}>
-      <Card title="Welcome" style={{ height: 720, width: 405 }}>
-        <Form form={form} layout="vertical" onFinish={onFinish}>
+      <Card title={ENTRY_MAP.get(entry)?.title} style={{ height: 720, width: 405 }}>
+        <Form form={form} layout="vertical" onFinish={onFinish} onFinishFailed={console.warn}>
           {entry === 'register' && <Name />}
           <Email checkout={entry === 'register'} />
+          {entry !== 'login' && <Captcha />}
           <Pwd />
-          {entry === 'register' && <ConfirmPwd />}
+          {entry !== 'login' && <ConfirmPwd />}
+
           <Item noStyle>
-            <Button htmlType="submit" type="primary" ghost block loading={charon.isLoading}>
-              {ENTRY_MAP.get(entry)}
+            <Button htmlType="submit" type="primary" size="large" block loading={charon.isLoading}>
+              {ENTRY_MAP.get(entry)?.title}
             </Button>
           </Item>
 
           <Item>
-            <Link onClick={switchEntry}>{ENTRY_SUB_MAP.get(entry)}</Link>
+            <div className={styles['space-between']}>
+              {entry !== 'login' && <Link onClick={go('login')}>已有账号？现在登录！</Link>}
+              {entry !== 'register' && <Link onClick={go('register')}>没有账号？现在注册！</Link>}
+              {entry !== 'forget-pwd' && <Link onClick={go('forget-pwd')}>忘记密码？</Link>}
+            </div>
           </Item>
         </Form>
       </Card>
