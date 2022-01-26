@@ -1,7 +1,9 @@
+import { Mail } from '@/constant/email';
 import useCoolDown from '@/js-sdk/hooks/useCoolDown';
 import { MailOutlined, UserOutlined, RobotOutlined, LockOutlined } from '@ant-design/icons';
-import { Form, Input, Typography } from 'antd';
+import { AutoComplete, Form, Input, Typography } from 'antd';
 import { FormInstance } from 'rc-field-form';
+import { useState } from 'react';
 import { validateKey } from '../api';
 import { fetchCaptcha, checkCaptcha } from '../api/captcha';
 const { Item } = Form;
@@ -12,28 +14,49 @@ export interface FieldProps {
   checkout?: boolean;
 }
 
-export const Email = ({ disabled, checkout }: FieldProps) => (
-  <Item
-    name="email"
-    hasFeedback
-    rules={[
-      { required: true, message: '请输入邮箱' },
-      {
-        validator: (_, email) =>
-          checkout && email ? validateKey({ params: { email }, notify: false }) : Promise.resolve(),
-      },
-      { type: 'email', message: '请检查邮箱格式' },
-    ]}
-  >
-    <Input
-      prefix={<MailOutlined />}
-      placeholder="邮箱"
-      disabled={disabled}
-      allowClear
-      size="large"
-    />
-  </Item>
-);
+export const Email = ({ disabled, checkout }: FieldProps) => {
+  const [mail, setMail] = useState<{ value: string }[]>([]);
+  function onSearch(value: string) {
+    if (value?.includes('@')) {
+      const [v] = value?.split('@');
+      setMail(Mail.map((m) => ({ value: `${v}@${m}` })));
+    } else {
+      setMail([]);
+    }
+  }
+  return (
+    <Item
+      name="email"
+      hasFeedback
+      rules={[
+        { required: true, message: '请输入邮箱' },
+        {
+          validator: (_, email) =>
+            checkout && email
+              ? validateKey({ params: { email }, notify: false })
+              : Promise.resolve(),
+        },
+        { type: 'email', message: '请检查邮箱格式' },
+      ]}
+    >
+      <AutoComplete
+        options={mail}
+        onSearch={onSearch}
+        filterOption={(inputValue, option) =>
+          option?.value?.toUpperCase?.()?.indexOf?.(inputValue?.toUpperCase?.()) !== -1
+        }
+      >
+        <Input
+          prefix={<MailOutlined />}
+          placeholder="邮箱"
+          disabled={disabled}
+          allowClear
+          size="large"
+        />
+      </AutoComplete>
+    </Item>
+  );
+};
 
 export const Captcha = () => {
   const { remaining, cooling, start } = useCoolDown({ count: 60, persistenceKey: 'captcha' });

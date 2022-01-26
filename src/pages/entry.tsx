@@ -6,7 +6,7 @@ import { useMutation } from 'react-query';
 import styles from './profile.less';
 
 const { Item } = Form;
-const { Link } = Typography;
+const { Link, Title } = Typography;
 
 interface Entry {
   title: string;
@@ -60,27 +60,44 @@ export default () => {
 
   return (
     <div className={styles.content}>
-      <Card title={ENTRY_MAP.get(entry)?.title} style={{ height: 720, width: 405 }}>
+      <Card>
         <Form form={form} layout="vertical" onFinish={onFinish} onFinishFailed={console.warn}>
-          {entry === 'register' && <Name />}
-          <Email checkout={entry === 'register'} />
-          {entry !== 'login' && <Captcha />}
-          <Pwd />
-          {entry !== 'login' && <ConfirmPwd />}
-
-          <Item noStyle>
-            <Button htmlType="submit" type="primary" size="large" block loading={charon.isLoading}>
-              {ENTRY_MAP.get(entry)?.title}
-            </Button>
-          </Item>
-
-          <Item>
-            <div className={styles['space-between']}>
-              {entry !== 'login' && <Link onClick={go('login')}>已有账号？现在登录！</Link>}
-              {entry !== 'register' && <Link onClick={go('register')}>没有账号？现在注册！</Link>}
-              {entry !== 'forget-pwd' && <Link onClick={go('forget-pwd')}>忘记密码？</Link>}
+          <Title level={4} className={styles.title}>
+            {ENTRY_MAP.get(entry)?.title}
+          </Title>
+          <div className={[styles['space-between'], styles.column, styles.card]?.join(' ')}>
+            <div>
+              {entry === 'register' && <Name />}
+              <Email checkout={entry === 'register'} />
+              {entry !== 'login' && <Captcha />}
+              <Pwd />
+              {entry !== 'login' && <ConfirmPwd />}
             </div>
-          </Item>
+
+            <div>
+              <Item noStyle>
+                <Button
+                  htmlType="submit"
+                  type="primary"
+                  size="large"
+                  block
+                  loading={charon.isLoading}
+                >
+                  {ENTRY_MAP.get(entry)?.title}
+                </Button>
+              </Item>
+
+              <Item>
+                <div className={styles['space-between']}>
+                  {entry !== 'login' && <Link onClick={go('login')}>已有账号？现在登录！</Link>}
+                  {entry !== 'register' && (
+                    <Link onClick={go('register')}>没有账号？现在注册！</Link>
+                  )}
+                  {entry !== 'forget-pwd' && <Link onClick={go('forget-pwd')}>忘记密码？</Link>}
+                </div>
+              </Item>
+            </div>
+          </div>
         </Form>
       </Card>
     </div>
