@@ -60,11 +60,8 @@ export default () => {
 
   return (
     <div className={styles.content}>
-      <Card>
+      <Card title={ENTRY_MAP.get(entry)?.title}>
         <Form form={form} layout="vertical" onFinish={onFinish} onFinishFailed={console.warn}>
-          <Title level={4} className={styles.title}>
-            {ENTRY_MAP.get(entry)?.title}
-          </Title>
           <div className={[styles['space-between'], styles.column, styles.card]?.join(' ')}>
             <div>
               {entry === 'register' && <Name />}

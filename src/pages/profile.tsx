@@ -16,16 +16,14 @@ export default () => {
 
   return (
     <div className={styles.content}>
-      <Card
-        title="个人档案"
-        style={{ height: 720, width: 405 }}
-        extra={<Link onClick={logout}>登出</Link>}
-      >
+      <Card title="个人档案" extra={<Link onClick={logout}>登出</Link>}>
         <Spin spinning={profile.isFetching}>
-          <Descriptions column={1}>
-            <Item label="昵称">{profile.data?.data?.name}</Item>
-            <Item label="Email">{profile.data?.data?.email}</Item>
-          </Descriptions>
+          <div className={[styles.card]?.join(' ')}>
+            <Descriptions column={1}>
+              <Item label="昵称">{profile.data?.data?.name}</Item>
+              <Item label="Email">{profile.data?.data?.email}</Item>
+            </Descriptions>
+          </div>
         </Spin>
       </Card>
     </div>
