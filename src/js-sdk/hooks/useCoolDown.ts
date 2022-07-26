@@ -5,6 +5,10 @@ export interface CoolDownParams {
   step?: number;
   persistenceKey?: string;
   onCoolDown?: () => void;
+  depend?: {
+    localStorage?: any;
+    setTimeout?: any;
+  };
 }
 
 const coolDownSuffix = ':cd:suffix';
@@ -19,46 +23,50 @@ export function encodeCoolDown(count: number, endAt: number, status: STATUS) {
   return [count, endAt, status]?.join();
 }
 
-export function decodeCoolDown(item: ReturnType<typeof localStorage.getItem>) {
-  return (item ?? ',,')?.split(',')?.map((v) => (v === '' ? NaN : +v)) as [
-    count: number,
-    endAt: number,
-    status: STATUS,
-  ];
-}
-
-export function setCoolDown(
-  key: string,
-  value: number,
-  endAt: number,
-  status: STATUS = STATUS.RUN,
-) {
-  return localStorage.setItem(`${key}${coolDownSuffix}`, encodeCoolDown(value, endAt, status));
-}
-
-export function getCoolDown(key: string) {
-  return decodeCoolDown(localStorage.getItem(`${key}${coolDownSuffix}`));
-}
-
-export function clearOvertime() {
-  Object.keys(localStorage)?.forEach((k) => {
-    if (k.endsWith(coolDownSuffix)) {
-      const [, endAt] = decodeCoolDown(localStorage.getItem(k));
-      if (endAt + 24 * 60 * 60 * 1000 < Date.now()) {
-        localStorage.removeItem(k);
-      }
-    }
-  });
-}
-
 export default ({
   count,
   interval = 1000,
   step = 1,
   persistenceKey,
   onCoolDown,
+  depend = window,
 }: CoolDownParams) => {
-  const isPersistence = !!persistenceKey;
+  let localStorage = depend.localStorage,
+    decodeCoolDown: any = null,
+    setCoolDown: any = null,
+    getCoolDown: any = null,
+    clearOvertime: any = null;
+
+  if (localStorage) {
+    decodeCoolDown = (item: ReturnType<typeof localStorage.getItem>) => {
+      return (item ?? ',,')?.split(',')?.map((v: any) => (v === '' ? NaN : +v)) as [
+        count: number,
+        endAt: number,
+        status: STATUS,
+      ];
+    };
+
+    setCoolDown = (key: string, value: number, endAt: number, status: STATUS = STATUS.RUN) => {
+      return localStorage.setItem(`${key}${coolDownSuffix}`, encodeCoolDown(value, endAt, status));
+    };
+
+    getCoolDown = (key: string) => {
+      return decodeCoolDown(localStorage.getItem(`${key}${coolDownSuffix}`));
+    };
+
+    clearOvertime = () => {
+      Object.keys(localStorage)?.forEach((k) => {
+        if (k.endsWith(coolDownSuffix)) {
+          const [, endAt] = decodeCoolDown(localStorage.getItem(k));
+          if (endAt + 24 * 60 * 60 * 1000 < Date.now()) {
+            localStorage.removeItem(k);
+          }
+        }
+      });
+    };
+  }
+
+  const isPersistence = !!persistenceKey && localStorage;
   let init = count;
   if (isPersistence) {
     const [pre, endAt, status] = getCoolDown(persistenceKey);
@@ -80,11 +88,13 @@ export default ({
 
   useEffect(() => {
     if (isPersistence && cooling) {
-      const [, , status] = getCoolDown(persistenceKey);
-      if (status === STATUS.RUN) start();
-    }
+      if (cooling) {
+        const [, , status] = getCoolDown(persistenceKey);
+        if (status === STATUS.RUN) start();
+      }
 
-    if (lock === 0) clearOvertime();
+      if (lock === 0) clearOvertime();
+    }
 
     return () => {
       lock--;
@@ -99,7 +109,7 @@ export default ({
       onCoolDown?.();
     } else {
       setRemaining(n);
-      timer.current = window.setTimeout(() => loop(n), interval);
+      timer.current = depend.setTimeout(() => loop(n), interval);
     }
   }
 

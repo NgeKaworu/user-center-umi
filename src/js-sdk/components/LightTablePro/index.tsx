@@ -1,4 +1,4 @@
-import type { MutableRefObject, ReactNode, Ref } from 'react'
+import type { MutableRefObject, ReactNode, Ref } from 'react';
 import { Card } from 'antd';
 import type { FormInstance, FormProps } from 'antd';
 import type { LightColumnProps, LightTableProps } from '../LightTable';
@@ -7,7 +7,10 @@ import type { SearchColumnsProps } from '../Search';
 import Search from '../Search';
 import type { QueryKey, QueryFunction, UseQueryOptions } from 'react-query';
 import useWrap from './hook/useWrap';
-import styles from './index.less';
+import styles from './index.module.less';
+
+export { default as useLightTablePro } from './hook/useLightTablePro';
+export { default as useWrap } from './hook/useWrap';
 
 type RequestParameters<RecordType> = Parameters<
   NonNullable<LightTableProps<RecordType>['onChange']>
@@ -110,24 +113,24 @@ export default function LightTablePro<RecordType extends Record<any, any> = any>
       </Card>
       {children}
       <div ref={tableCardRef}>
-      <Card>
-        <div className={`${styles.flex} ${styles.column}`}>
-          <div className={`${styles.flex} ${styles?.['space-between']}`}>
-            <div>{headerTitle}</div>
-            <div>{toolBarRender}</div>
-          </div>
+        <Card>
+          <div className={`${styles.flex} ${styles.column}`}>
+            <div className={`${styles.flex} ${styles?.['space-between']}`}>
+              <div>{headerTitle}</div>
+              <div>{toolBarRender}</div>
+            </div>
 
-          <LightTable<RecordType>
-            size="small"
-            sticky
-            columnEmptyText="-"
-            bordered
-            columns={columns}
-            {...tableHandler}
-            {...props}
-          />
-        </div>
-      </Card>
+            <LightTable<RecordType>
+              size="small"
+              sticky
+              columnEmptyText="-"
+              bordered
+              columns={columns}
+              {...tableHandler}
+              {...props}
+            />
+          </div>
+        </Card>
       </div>
     </div>
   );
